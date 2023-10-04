@@ -18,8 +18,22 @@ namespace chat
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
-            Process.Start("taskkill", "/im chat.exe /f");
+            Application.Run(new RedTeamChat());
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = "taskkill",
+                Arguments = "/im chat.exe /f",
+                CreateNoWindow = true,
+                UseShellExecute = false
+            };
+
+            Process process = new Process
+            {
+                StartInfo = psi
+            };
+
+            process.Start();
+            process.WaitForExit();
             return;
         }
     }
