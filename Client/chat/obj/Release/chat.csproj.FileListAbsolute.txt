@@ -12,5 +12,5 @@ E:\Project-table\c#project\chat\chat\obj\Release\chat.exe
 E:\Project-table\c#project\chat\chat\obj\Release\chat.pdb
 E:\Project-table\c#project\chat\chat\obj\Release\chat.g.resources
 E:\Project-table\c#project\chat\chat\obj\Release\chat.Resource1.resources
-E:\Project-table\c#project\chat\chat\obj\Release\chat.RedTeamChat.resources
 E:\Project-table\c#project\chat\chat\obj\Release\chat.inpfilename.resources
+E:\Project-table\c#project\chat\chat\obj\Release\chat.RedTeamChatf.resources

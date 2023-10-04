@@ -41,9 +41,9 @@ namespace chat
             this.change.Name = "change";
             this.change.Size = new System.Drawing.Size(171, 49);
             this.change.TabIndex = 0;
-            this.change.Text = "change to";
+            this.change.Text = "change name";
             this.change.TipsFont = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.change.Click += Change_Click;
+            this.change.Click += new System.EventHandler(this.change_Click_1);
             // 
             // filenm
             // 
@@ -71,19 +71,18 @@ namespace chat
             this.ResumeLayout(false);
 
         }
-
-        private string change_Click(object sender, EventArgs e)
+        public static class GlobalVariables
         {
-            return filenm.Text;
+            public static string Filenamechange { get; set; }
         }
-
         private void newnm_TextChanged(object sender, EventArgs e)
         {
 
         }
-        private void Change_Click(object sender, EventArgs e)
+
+        private void change_Click_1(object sender, EventArgs e)
         {
-            
+            GlobalVariables.Filenamechange = filenm.Text;
         }
     }
 }
