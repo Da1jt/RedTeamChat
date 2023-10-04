@@ -213,7 +213,7 @@ void HandleClient(SOCKET clientSocket)
 			break;
 
 		message[recvLen] = '\0';
-
+		
 		std::ofstream o_log("log.txt", std::ios::app);
 		std::string temp = Utf8ToAnsi(std::string(message));
 		replaceAll(temp, "\n", " %r%");
