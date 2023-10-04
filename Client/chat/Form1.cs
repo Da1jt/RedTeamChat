@@ -1,4 +1,4 @@
-﻿using Sunny.UI;
+using Sunny.UI;
 using Sunny.UI.Win32;
 using System;
 using System.Net;
