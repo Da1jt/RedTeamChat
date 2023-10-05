@@ -22,8 +22,9 @@ namespace chat
         {
             InitializeComponent();
             discon.Hide();
-            refreshfilel.Enabled=false;
+            refreshfilel.Enabled = false;
             this.Text = "RedTeamChat";
+            this.Icon = Properties.Resources.chat;
             uiDataGridView1.Dock = DockStyle.Fill;
             uiDataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             uiDataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
@@ -76,7 +77,7 @@ namespace chat
             if (rcvdata == "common") return 1;
             else if (rcvdata == "list") return 2;
             else if (rcvdata == "log") return 3;
-            else if (rcvdata =="file") return 4;
+            else if (rcvdata == "file") return 4;
             return 0;
         }
         public void ReceiveData(object clientSocket)
@@ -180,9 +181,10 @@ namespace chat
                             }));
                             throw;
                         }
-                    }else if (typedet == 4) 
+                    }
+                    else if (typedet == 4)
                     {
-                        
+
                     }
                     else
                     {
@@ -258,21 +260,8 @@ namespace chat
                 {
                     MessageBox.Show("name cannot be blank");
                 }
-                else if (TagDetect(nameset.Text) == 0)
+                else if (valider(inputbutton.Text,""))
                 {
-                    MessageBox.Show("// is not allowed in name");
-                }
-                else if (TagDetect(nameset.Text) == 1)
-                {
-                    MessageBox.Show("## is not allowed in name");
-                }
-                else if (TagDetect(nameset.Text) == 3)
-                {
-                    MessageBox.Show("%% is not allowed in name");
-                }
-                else if (TagDetect(nameset.Text) == 4)
-                {
-                    MessageBox.Show("@@@ is not allowed in name");
                 }
                 else if (contrigger == true)
                 {
@@ -280,21 +269,8 @@ namespace chat
                 }
 
             }
-            else if (TagDetect(inputbutton.Text) == 0)
+            else if (valider(inputbutton.Text,""))
             {
-                MessageBox.Show("// is not allowed");
-            }
-            else if (TagDetect(inputbutton.Text) == 1)
-            {
-                MessageBox.Show("## is not allowed");
-            }
-            else if (TagDetect(inputbutton.Text) == 3)
-            {
-                MessageBox.Show("%% is not allowed");
-            }
-            else if (TagDetect(inputbutton.Text) == 4)
-            {
-                MessageBox.Show("@@@ is not allowed");
             }
             else
             {
@@ -302,25 +278,8 @@ namespace chat
                 {
                     MessageBox.Show("name cannot be blank");
                 }
-                else if (TagDetect(nameset.Text) == 0)
+                else if (valider(nameset.Text, "name"))
                 {
-                    MessageBox.Show("// is not allowed in name");
-                }
-                else if (TagDetect(nameset.Text) == 1)
-                {
-                    MessageBox.Show("## is not allowed in name");
-                }
-                else if (TagDetect(nameset.Text) == 3)
-                {
-                    MessageBox.Show("%% is not allowed in name");
-                }
-                else if (TagDetect(nameset.Text) == 4)
-                {
-                    MessageBox.Show("@@@ is not allowed in name");
-                }
-                else if (!contrigger)
-                {
-                    MessageBox.Show("U need to connect to the server before sending");
                 }
                 else
                 {
@@ -363,6 +322,35 @@ namespace chat
 
         }
 
+        private bool valider(string i, string t)
+        {
+            if (TagDetect(i) == 0)
+            {
+                MessageBox.Show("// is not allowed in " + t);
+                return true;
+            }
+            else if (TagDetect(i) == 1)
+            {
+                MessageBox.Show("## is not allowed in " + t);
+                return true;
+            }
+            else if (TagDetect(i) == 3)
+            {
+                MessageBox.Show("%% is not allowed in " + t);
+                return true;
+            }
+            else if (TagDetect(i) == 4)
+            {
+                MessageBox.Show("@@@ is not allowed in " + t);
+                return true;
+            }
+            else if (!contrigger)
+            {
+                MessageBox.Show("U need to connect to the server before sending");
+                return true;
+            }
+            return false;
+        }
         private void link_jui_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("https://github.com/BadJui/");
@@ -393,10 +381,11 @@ namespace chat
 
             clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             contrigger = false;
-            if (nameset.Text=="")
+            if (nameset.Text == "")
             {
                 MessageBox.Show("empty is not allowed");
-            }else if (con.Enabled == false)
+            }
+            else if (con.Enabled == false)
             {
                 MessageBox.Show("U need to disconnect before connect to other server");
             }
@@ -417,7 +406,7 @@ namespace chat
                     ProcessStartInfo psi = new ProcessStartInfo
                     {
                         FileName = "./daemon.exe",
-                        Arguments = serverIP+" "+serverPort+" "+nameset.Text,
+                        Arguments = serverIP + " " + serverPort + " " + nameset.Text,
                         CreateNoWindow = true,
                         UseShellExecute = false
                     };
@@ -436,9 +425,9 @@ namespace chat
                 catch (Exception ex)
                 {
                     this.Invoke(new Action(() =>
-                        {
-                            consolee.Text += "Exception: " + ex.Message + "\n";
-                        }
+                    {
+                        consolee.Text += "Exception: " + ex.Message + "\n";
+                    }
                     ));
                     throw;
 
@@ -489,7 +478,7 @@ namespace chat
                 try
                 {
                     DateTime currentTime = DateTime.Now;
-                    send("@@@Exit the server@@@",nameset.Text,currentTime.ToString(),"common");
+                    send("@@@Exit the server@@@", nameset.Text, currentTime.ToString(), "common");
                     clientSocket.Shutdown(SocketShutdown.Both);
                     this.Invoke(new Action((() =>
                     {
@@ -583,7 +572,7 @@ namespace chat
 
         private void refreshfilel_Click(object sender, EventArgs e)
         {
-            
+
             DataTable dataTable = new DataTable();
             dataTable.Columns.Add("文件名");
             dataTable.Columns.Add("大小");
@@ -650,20 +639,21 @@ namespace chat
             // 获取当前选中的行
             DataGridViewRow selectedRow = uiDataGridView1.CurrentRow;
 
-            if (selectedRow != null){
+            if (selectedRow != null)
+            {
                 string oldFileName = selectedRow.Cells["文件名"].Value.ToString();
 
                 inpfilename inputDialog = new inpfilename();
 
                 if (inputDialog.ShowDialog() == DialogResult.OK)
                 {
-                    if (oldFileName==inpfilename.GlobalVariables.Filenamechange)
+                    if (oldFileName == inpfilename.GlobalVariables.Filenamechange)
                     {
                         MessageBox.Show("File name has not changed");
                     }
                     else
                     {
-                        send(inpfilename.GlobalVariables.Filenamechange,nameset.Text,"","file");
+                        send(inpfilename.GlobalVariables.Filenamechange, nameset.Text, "", "file");
                     }
                 }
             }
