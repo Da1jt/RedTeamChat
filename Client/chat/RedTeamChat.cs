@@ -22,16 +22,14 @@ namespace chat
             ProcessStartInfo psi = new ProcessStartInfo
             {
                 FileName = "taskkill",
-                Arguments = "/im chat.exe /f",
+                Arguments = "/pid " + Process.GetCurrentProcess().Id + " /f",
                 CreateNoWindow = true,
                 UseShellExecute = false
             };
-
             Process process = new Process
             {
                 StartInfo = psi
             };
-
             process.Start();
         }
     }

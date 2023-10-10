@@ -11,19 +11,30 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Drawing;
+using System.Text.RegularExpressions;
 using System.Data;
+using System.IO;
+using chat.Properties;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolBar;
+using System.Resources;
+using System.Reflection;
+using static chat.emoji;
 
 namespace chat
 {
     public partial class RedTeamChatf : UIAsideHeaderMainFrame
     {
-
+        
         public RedTeamChatf()
         {
             InitializeComponent();
             discon.Hide();
+            Application.EnableVisualStyles();
             refreshfilel.Enabled = false;
             this.Text = "RedTeamChat";
+            server.Text = "127.0.0.1";
+            nameset.Text = "1";
             this.Icon = Properties.Resources.chat;
             uiDataGridView1.Dock = DockStyle.Fill;
             uiDataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -35,7 +46,6 @@ namespace chat
         public static extern bool FlashWindow(IntPtr hwnd, bool bInvert);
         bool contrigger = false, connectb = false, autodisconnect = false;
         private Socket clientSocket;
-
         public void send(string msge, string name, string time, string type)
         {
 
@@ -108,10 +118,24 @@ namespace chat
                             {
                                 tips();
                             }
-                            this.Invoke(new Action(() =>
+                            
+                            string firsub = firstString;
+                            if (firsub.StartsWith("[") && firsub.EndsWith("]"))
                             {
-                                rcv.Text += "User: " + secondString + " time: " + thirdString + "\n" + firstString + "\n";
-                            }));
+                                this.Invoke(new Action(() =>
+                                {
+                                    lableadd(" User:  " + secondString + " time:  " + thirdString, "text");
+                                }));
+                                emojianalysis(firsub);
+                                
+                            }
+                            else
+                            {
+                                this.Invoke(new Action(() =>
+                                {
+                                    lableadd(" User:  " + secondString + " time:  " + thirdString + "\n" + firstString, "text");
+                                }));
+                            }
                         }
                     }
                     else if (typedet == 2)
@@ -127,7 +151,7 @@ namespace chat
                         {
                             this.Invoke(new Action(() =>
                             {
-                                consolee.Text += parts[i] + "\n";
+                                consolee.Text += " " + parts[i] + "\n";
                             }));
                         }
                         this.Invoke(new Action(() =>
@@ -142,7 +166,10 @@ namespace chat
                         {
                             int Tagn = TagNumbGet(pt2, "##");
                             string[] parts = pt2.Split(new string[] { "##" }, StringSplitOptions.None);
-                            string chatHistory = ""; // 用于累积聊天历史记录的字符串变量
+                            this.Invoke(new Action((() =>
+                            {
+                                lableadd("-------Chat-history-begin-------", "text");
+                            })));
 
                             for (int i = 0; i < Tagn; i++)
                             {
@@ -155,23 +182,34 @@ namespace chat
                                     firstString = part[0];
                                     secondString = part[1];
                                     thirdString = part[2];
+                                    string firsub = firstString;
+                                    if (firsub.StartsWith("[") && firsub.EndsWith("]"))
+                                    {
+                                        this.Invoke(new Action(() =>
+                                        {
+                                            lableadd(" User:  " + secondString + " time:  " + thirdString, "text");
+                                        }));
+                                        emojianalysis(firsub);
 
-                                    // 将每次迭代的结果累积到chatHistory字符串中
-                                    chatHistory += "User: " + secondString + " time: " + thirdString + "\n" + firstString + "\n";
+                                    }
+                                    else
+                                    {
+                                        this.Invoke(new Action(() =>
+                                        {
+                                            lableadd(" User:  " + secondString + " time:  " + thirdString + "\n" + firstString, "text");
+                                        }));
+                                    }
+                                    this.Invoke(new Action(() =>
+                                    {
+                                        consolee.Text += " User:  " + secondString + " time:  " + thirdString + "\n" + firstString+"\n";
+                                    }));
                                 }
                             }
-
                             this.Invoke(new Action((() =>
                             {
-                                rcv.Text += "-------Chat history begin-------\n";
-                                rcv.Text += chatHistory; // 将累积的结果添加到rcv.Text中
-                                rcv.Text += "-------Chat history end---------\n";
+                                lableadd("-------Chat-history-end---------", "text");
                             })));
 
-                            this.Invoke(new Action(() =>
-                            {
-                                consolee.Text += chatHistory; // 将累积的结果添加到consolee.Text中
-                            }));
                         }
                         catch (Exception e)
                         {
@@ -260,7 +298,7 @@ namespace chat
                 {
                     MessageBox.Show("name cannot be blank");
                 }
-                else if (valider(inputbutton.Text,""))
+                else if (valider(inputbutton.Text, ""))
                 {
                 }
                 else if (contrigger == true)
@@ -269,7 +307,7 @@ namespace chat
                 }
 
             }
-            else if (valider(inputbutton.Text,""))
+            else if (valider(inputbutton.Text, ""))
             {
             }
             else
@@ -399,9 +437,10 @@ namespace chat
                     clientSocket.Connect(serverEP);
                     consolee.Text += "Connected to the server " + serverIP + " port " + serverPort + "\n------------\n";
                     tips();
-                    rcv.Text = "";
+                    //uiFlowLayoutPanel1.Controls.Clear();
                     Thread receiveThread = new Thread(ReceiveData);
                     receiveThread.Start(clientSocket);
+                    this.Text = "RedTeamChat  " + nameset.Text;
                     contrigger = true;
                     ProcessStartInfo psi = new ProcessStartInfo
                     {
@@ -478,13 +517,13 @@ namespace chat
                 try
                 {
                     DateTime currentTime = DateTime.Now;
-                    send("@@@Exit the server@@@", nameset.Text, currentTime.ToString(), "common");
+                    /*send("@@@Exit the server@@@", nameset.Text, currentTime.ToString(), "common");*/
                     clientSocket.Shutdown(SocketShutdown.Both);
                     this.Invoke(new Action((() =>
                     {
                         connecttrit.Text = "Disconnected";
                         nameset.Enabled = true;
-                        rcv.Text = "Disconnected\n";
+                        lableadd("Disconnected", "text");
                         discon.Hide();
                         con.Enabled = true;
                     })));
@@ -619,6 +658,37 @@ namespace chat
 
         }
 
+        private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        {
+
+        }
+
+        private void uiButton3_Click(object sender, EventArgs e)
+        {
+            /*// 创建 PictureBox 控件
+            PictureBox pictureBox = new PictureBox();
+            pictureBox.Size = new Size(100, 100); // 设置图片框大小
+            pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+
+            // 加载图片
+            Image image = Image.FromFile("fil.png");
+            pictureBox.Image = image;
+
+            // 设置 FlowLayoutPanel 控件的流动方向和控件间距
+            uiFlowLayoutPanel1.FlowDirection = FlowDirection.TopDown;
+            uiFlowLayoutPanel1.WrapContents = false;
+            
+            uiFlowLayoutPanel1.Padding = new Padding(10); // 设置控件之间的间距
+            uiFlowLayoutPanel1.ScrollBarWidth = 0;
+            // 添加 PictureBox 控件到 FlowLayoutPanel 控件
+            uiFlowLayoutPanel1.Controls.Add(pictureBox);
+            // 创建 Label 控件
+            Label label = new Label();
+            label.Text = "Label Text";
+            label.AutoSize = true;
+            uiFlowLayoutPanel1.Controls.Add(label);*/
+        }
+
         private void RemoveFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // 获取当前选中的行
@@ -633,6 +703,36 @@ namespace chat
                 // 移除选中的行
                 uiDataGridView1.Rows.Remove(selectedRow);
             }
+        }
+
+        private void uiFlowLayoutPanel1_Click(object sender, EventArgs e)
+        {
+
+        }
+        private UIComboBox uiComboBox;
+        private bool emojiselected = false;
+        private void Emoji_Click(object sender, EventArgs e)
+        {
+            if (contrigger)
+            {
+                emoji emojiForm = new emoji();
+                emojiForm.ShowDialog();
+                emojisend(GlobalData.emojiset);
+
+            }
+            else
+            {
+                MessageBox.Show("Please connect first","Not allowed");
+            }
+        }
+        public void emojisend(string data)
+        {
+            DateTime currentTime = DateTime.Now;
+            if (emoji.GlobalData.emojiset!="none")
+            {
+                send("[" + emoji.GlobalData.emojiset + "]", nameset.Text, currentTime.ToString(), "common");
+            }
+
         }
         private void RenameFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -658,5 +758,77 @@ namespace chat
                 }
             }
         }
+
+        private void lableadd(string inp, string type)
+        {
+            if (type == "text")
+            {
+                this.Invoke(new Action((() =>
+                {
+                    Label label = new Label();
+                    label.Text = inp;
+                    label.AutoSize = true;
+                    uiFlowLayoutPanel1.Controls.Add(label);
+                    //label.ForeColor = Color.Teal;
+                })));
+            }
+            else if (type == "img")
+            {
+                this.Invoke(new Action((() =>
+                {
+                    try
+                    {
+                        PictureBox pictureBox = new PictureBox();
+                        pictureBox.Size = new Size(200, 200);
+                        pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+                        File.Create("C:\\Users\\"+Environment.UserName+"\\RedTeamTemp\\temp");
+                        File.Delete("C:\\Users\\" + Environment.UserName + "\\RedTeamTemp\\temp");
+                        Image image = Image.FromFile("C:\\Users\\" + Environment.UserName + "\\RedTeamTemp\\" + inp);
+                        pictureBox.Image = image;
+                        uiFlowLayoutPanel1.Controls.Add(pictureBox);
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message,"Err");
+                        //throw;
+                    }
+                    
+                })));
+            }else if (type=="emoji")
+            {
+                this.Invoke(new Action((() =>
+                {
+                    try
+                    {
+                        PictureBox pictureBox = new PictureBox();
+                        pictureBox.Size = new Size(100, 100);
+                        pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+                        Assembly assembly = Assembly.GetExecutingAssembly();
+                        Stream imageStream = assembly.GetManifestResourceStream("chat.Resources.Doge.jpg"); 
+                        pictureBox.Image = Image.FromStream(imageStream);
+                        uiFlowLayoutPanel1.Controls.Add(pictureBox);
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message,"Err");
+                        //throw;
+                    }
+
+                })));
+            }
+        }
+
+        public void emojianalysis(string emojiname)
+        {
+            if (emojiname == "[Doge]")
+            {
+                lableadd("Doge.jpg", "emoji");
+            }
+            else
+            {
+                lableadd("Error type emoji", "text");
+            }
+        }
+
     }
 }
