@@ -25,7 +25,6 @@ namespace chat
 {
     public partial class RedTeamChatf : UIAsideHeaderMainFrame
     {
-        
         public RedTeamChatf()
         {
             InitializeComponent();
@@ -416,7 +415,6 @@ namespace chat
                     throw;
                 }
             }
-
             clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             contrigger = false;
             if (nameset.Text == "")
@@ -654,8 +652,6 @@ namespace chat
             // 将右键菜单关联到 DataGridView 控件
             uiDataGridView1.ContextMenuStrip = contextMenuStrip1;
             uiDataGridView1.DataSource = dataTable;
-
-
         }
 
         private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
@@ -804,7 +800,7 @@ namespace chat
                         pictureBox.Size = new Size(100, 100);
                         pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
                         Assembly assembly = Assembly.GetExecutingAssembly();
-                        Stream imageStream = assembly.GetManifestResourceStream("chat.Resources.Doge.jpg"); 
+                        Stream imageStream = assembly.GetManifestResourceStream("chat.Resources."+inp); 
                         pictureBox.Image = Image.FromStream(imageStream);
                         uiFlowLayoutPanel1.Controls.Add(pictureBox);
                     }

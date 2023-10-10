@@ -516,7 +516,7 @@ namespace chat
             // 
             this.uiButton1.Cursor = System.Windows.Forms.Cursors.Hand;
             this.uiButton1.Font = new System.Drawing.Font("宋体", 15F);
-            this.uiButton1.Location = new System.Drawing.Point(641, 428);
+            this.uiButton1.Location = new System.Drawing.Point(650, 428);
             this.uiButton1.MinimumSize = new System.Drawing.Size(1, 1);
             this.uiButton1.Name = "uiButton1";
             this.uiButton1.Size = new System.Drawing.Size(161, 60);

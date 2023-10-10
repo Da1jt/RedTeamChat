@@ -86,6 +86,7 @@ namespace chat
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.Style = Sunny.UI.UIStyle.Custom;
+            this.Text = "EmojiForm";
             this.TitleColor = System.Drawing.Color.DimGray;
             this.ZoomScaleRect = new System.Drawing.Rectangle(19, 19, 818, 537);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.emoji_FormClosed);
@@ -113,7 +114,6 @@ namespace chat
 
         private void emoji_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
         {
-            //GlobalData.emojiset = "none";
             Close();
         }
     }
