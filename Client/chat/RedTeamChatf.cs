@@ -1,5 +1,4 @@
 ﻿using Sunny.UI;
-using Sunny.UI.Win32;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -7,19 +6,17 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Security.Cryptography;
 using System.Drawing;
-using System.Text.RegularExpressions;
 using System.Data;
 using System.IO;
-using chat.Properties;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolBar;
-using System.Resources;
 using System.Reflection;
 using static chat.emoji;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
+using Sunny.UI.Win32;
+using System.Xml.Linq;
 
 namespace chat
 {
@@ -31,9 +28,7 @@ namespace chat
             discon.Hide();
             Application.EnableVisualStyles();
             refreshfilel.Enabled = false;
-            this.Text = "RedTeamChat";
             server.Text = "127.0.0.1";
-            nameset.Text = "1";
             this.Icon = Properties.Resources.chat;
             uiDataGridView1.Dock = DockStyle.Fill;
             uiDataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -78,6 +73,23 @@ namespace chat
                         consolee.Text += "Exception: " + e.Message + "\n";
                     }));
                 }
+            }else if (type == "encode")
+            {
+                try
+                {
+                    string dataString = msge + "//" + name + "//" + time;
+                    byte[] dataBytes = Encoding.UTF8.GetBytes(dataString);
+                    string base64EncodedData = Base64Encode(Encoding.UTF8, dataBytes.ToString());
+                    clientSocket.Send(Encoding.UTF8.GetBytes(base64EncodedData));
+                    inputbutton.Text = "";
+                }
+                catch (Exception e)
+                {
+                    consolee.Invoke(new Action(() =>
+                    {
+                        consolee.Text += "Exception: " + e.Message + "\n";
+                    }));
+                }
             }
         }
 
@@ -87,6 +99,7 @@ namespace chat
             else if (rcvdata == "list") return 2;
             else if (rcvdata == "log") return 3;
             else if (rcvdata == "file") return 4;
+            else if (rcvdata == "emsg") return 5;
             return 0;
         }
         public void ReceiveData(object clientSocket)
@@ -117,22 +130,28 @@ namespace chat
                             {
                                 tips();
                             }
-                            
-                            string firsub = firstString;
-                            if (firsub.StartsWith("[") && firsub.EndsWith("]"))
+
+                            if (firstString.StartsWith("[") && firstString.EndsWith("]"))
                             {
                                 this.Invoke(new Action(() =>
                                 {
                                     lableadd(" User:  " + secondString + " time:  " + thirdString, "text");
+                                    emojianalysis(firstString);
                                 }));
-                                emojianalysis(firsub);
-                                
+                            }
+                            else if (firstString.StartsWith("@@@") && firstString.EndsWith("@@@"))
+                            {
+                                this.Invoke(new Action(() =>
+                                {
+                                    lableadd(" User:  " + secondString + " time:  " + thirdString + "\n" + firstString, "text");
+                                }));
                             }
                             else
                             {
                                 this.Invoke(new Action(() =>
                                 {
-                                    lableadd(" User:  " + secondString + " time:  " + thirdString + "\n" + firstString, "text");
+                                    lableadd(" User:  " + secondString + " time:  " + thirdString + "\n", "text");
+                                    lableadd(firstString, "msgbox");
                                 }));
                             }
                         }
@@ -144,7 +163,7 @@ namespace chat
                         string[] parts = pt2.Split(new string[] { "//" }, StringSplitOptions.None);
                         this.Invoke(new Action(() =>
                         {
-                            consolee.Text += "-----------\n";
+                            consolee.Text += "[-----------\n";
                         }));
                         for (int i = 0; i < Tagn; i++)
                         {
@@ -155,7 +174,7 @@ namespace chat
                         }
                         this.Invoke(new Action(() =>
                         {
-                            consolee.Text += "-----------\n";
+                            consolee.Text += "-----------]\n";
                         }));
                     }
                     else if (typedet == 3)
@@ -167,7 +186,7 @@ namespace chat
                             string[] parts = pt2.Split(new string[] { "##" }, StringSplitOptions.None);
                             this.Invoke(new Action((() =>
                             {
-                                lableadd("-------Chat-history-begin-------", "text");
+                                lableadd("[-------Chat-history-begin-------", "text");
                             })));
 
                             for (int i = 0; i < Tagn; i++)
@@ -178,37 +197,36 @@ namespace chat
 
                                 if (part.Length == 3)
                                 {
-                                    firstString = part[0];
-                                    secondString = part[1];
-                                    thirdString = part[2];
-                                    string firsub = firstString;
-                                    if (firsub.StartsWith("[") && firsub.EndsWith("]"))
+                                    firstString = part[0]; secondString = part[1]; thirdString = part[2];
+                                    if (firstString.StartsWith("[") && firstString.EndsWith("]"))
                                     {
                                         this.Invoke(new Action(() =>
                                         {
                                             lableadd(" User:  " + secondString + " time:  " + thirdString, "text");
+                                            emojianalysis(firstString);
                                         }));
-                                        emojianalysis(firsub);
-
+                                    }
+                                    else if (firstString.StartsWith("@@@") && firstString.EndsWith("@@@"))
+                                    {
+                                        this.Invoke(new Action(() =>
+                                        {
+                                            lableadd("\n" + " User:  " + secondString + " time:  " + thirdString + "   " + firstString + "\n", "text");
+                                        }));
                                     }
                                     else
                                     {
                                         this.Invoke(new Action(() =>
                                         {
-                                            lableadd(" User:  " + secondString + " time:  " + thirdString + "\n" + firstString, "text");
+                                            lableadd(" User:  " + secondString + " time:  " + thirdString + "\n", "text");
+                                            lableadd(firstString, "msgbox");
                                         }));
                                     }
-                                    this.Invoke(new Action(() =>
-                                    {
-                                        consolee.Text += " User:  " + secondString + " time:  " + thirdString + "\n" + firstString+"\n";
-                                    }));
                                 }
                             }
                             this.Invoke(new Action((() =>
                             {
-                                lableadd("-------Chat-history-end---------", "text");
+                                lableadd("-------Chat-history-end---------]", "text");
                             })));
-
                         }
                         catch (Exception e)
                         {
@@ -222,6 +240,54 @@ namespace chat
                     else if (typedet == 4)
                     {
 
+                    }
+                    else if (typedet == 5)
+                    {
+                        string decoded = Base64Decode(pt2);
+                        if (decoded.StartsWith(nameset.Text))
+                        {
+                            string fn = decoded;
+                            for (int i = nameset.Text.Length; i < decoded.Length; i++)
+                            {
+                                fn += decoded[i];
+                            }
+                            string[] partss = decoded.Split(new string[] { "//" }, StringSplitOptions.None);
+                            string firstString, secondString, thirdString;
+                            if (partss.Length == 3)
+                            {
+                                firstString = partss[0];
+                                secondString = partss[1];
+                                thirdString = partss[2];
+                                if (nameset.Text != secondString)
+                                {
+                                    tips();
+                                }
+
+                                if (firstString.StartsWith("[") && firstString.EndsWith("]"))
+                                {
+                                    this.Invoke(new Action(() =>
+                                    {
+                                        lableadd(" User:  " + secondString + " time:  " + thirdString, "text");
+                                        emojianalysis(firstString);
+                                    }));
+                                }
+                                else if (firstString.StartsWith("@@@") && firstString.EndsWith("@@@"))
+                                {
+                                    this.Invoke(new Action(() =>
+                                    {
+                                        lableadd(" User:  " + secondString + " time:  " + thirdString + "\n" + firstString, "text");
+                                    }));
+                                }
+                                else
+                                {
+                                    this.Invoke(new Action(() =>
+                                    {
+                                        lableadd(" User:  " + secondString + " time:  " + thirdString + "\n", "text");
+                                        lableadd(firstString, "msgbox");
+                                    }));
+                                }
+                            }
+                        }
                     }
                     else
                     {
@@ -440,7 +506,7 @@ namespace chat
                     receiveThread.Start(clientSocket);
                     this.Text = "RedTeamChat  " + nameset.Text;
                     contrigger = true;
-                    ProcessStartInfo psi = new ProcessStartInfo
+                    /*ProcessStartInfo psi = new ProcessStartInfo
                     {
                         FileName = "./daemon.exe",
                         Arguments = serverIP + " " + serverPort + " " + nameset.Text,
@@ -452,7 +518,7 @@ namespace chat
                         StartInfo = psi
                     };
 
-                    process.Start();
+                    process.Start();*/
                     connecttrit.Text = "Connected";
                     nameset.Enabled = false;
                     con.Enabled = false;
@@ -515,7 +581,7 @@ namespace chat
                 try
                 {
                     DateTime currentTime = DateTime.Now;
-                    /*send("@@@Exit the server@@@", nameset.Text, currentTime.ToString(), "common");*/
+                    send("@@@Exit the server@@@", nameset.Text, currentTime.ToString(), "common");
                     clientSocket.Shutdown(SocketShutdown.Both);
                     this.Invoke(new Action((() =>
                     {
@@ -525,7 +591,7 @@ namespace chat
                         discon.Hide();
                         con.Enabled = true;
                     })));
-                    ProcessStartInfo psi = new ProcessStartInfo
+                    /*ProcessStartInfo psi = new ProcessStartInfo
                     {
                         FileName = "taskkill",
                         Arguments = "/im daemon.exe /f",
@@ -536,7 +602,7 @@ namespace chat
                     {
                         StartInfo = psi
                     };
-                    process.Start();
+                    process.Start();*/
                 }
                 catch (Exception exception)
                 {
@@ -659,32 +725,6 @@ namespace chat
 
         }
 
-        private void uiButton3_Click(object sender, EventArgs e)
-        {
-            /*// 创建 PictureBox 控件
-            PictureBox pictureBox = new PictureBox();
-            pictureBox.Size = new Size(100, 100); // 设置图片框大小
-            pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-
-            // 加载图片
-            Image image = Image.FromFile("fil.png");
-            pictureBox.Image = image;
-
-            // 设置 FlowLayoutPanel 控件的流动方向和控件间距
-            uiFlowLayoutPanel1.FlowDirection = FlowDirection.TopDown;
-            uiFlowLayoutPanel1.WrapContents = false;
-            
-            uiFlowLayoutPanel1.Padding = new Padding(10); // 设置控件之间的间距
-            uiFlowLayoutPanel1.ScrollBarWidth = 0;
-            // 添加 PictureBox 控件到 FlowLayoutPanel 控件
-            uiFlowLayoutPanel1.Controls.Add(pictureBox);
-            // 创建 Label 控件
-            Label label = new Label();
-            label.Text = "Label Text";
-            label.AutoSize = true;
-            uiFlowLayoutPanel1.Controls.Add(label);*/
-        }
-
         private void RemoveFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // 获取当前选中的行
@@ -718,13 +758,13 @@ namespace chat
             }
             else
             {
-                MessageBox.Show("Please connect first","Not allowed");
+                MessageBox.Show("Please connect first", "Not allowed");
             }
         }
         public void emojisend(string data)
         {
             DateTime currentTime = DateTime.Now;
-            if (emoji.GlobalData.emojiset!="none")
+            if (emoji.GlobalData.emojiset != "none")
             {
                 send("[" + emoji.GlobalData.emojiset + "]", nameset.Text, currentTime.ToString(), "common");
             }
@@ -755,6 +795,19 @@ namespace chat
             }
         }
 
+        private void uiButton3_Click_1(object sender, EventArgs e)
+        {
+            UIRichTextBox richTextBox = new UIRichTextBox();
+            richTextBox.Text = "123\n123\n";
+            richTextBox.ReadOnly = true;
+            richTextBox.Radius = 11;
+            richTextBox.FillColor = Color.SkyBlue;
+            richTextBox.RadiusSides = ((Sunny.UI.UICornerRadiusSides)((Sunny.UI.UICornerRadiusSides.RightTop | Sunny.UI.UICornerRadiusSides.RightBottom)));
+            richTextBox.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            AdjustRichTextBoxSize(richTextBox);
+            tabPage5.Controls.Add(richTextBox);
+        }
+
         private void lableadd(string inp, string type)
         {
             if (type == "text")
@@ -768,6 +821,18 @@ namespace chat
                     //label.ForeColor = Color.Teal;
                 })));
             }
+            else if (type == "msgbox")
+            {
+                UIRichTextBox richTextBox = new UIRichTextBox();
+                richTextBox.Text = inp;
+                richTextBox.ReadOnly = true;
+                richTextBox.Radius = 11;
+                richTextBox.FillColor = Color.SkyBlue;
+                richTextBox.RadiusSides = ((Sunny.UI.UICornerRadiusSides)((Sunny.UI.UICornerRadiusSides.RightTop | Sunny.UI.UICornerRadiusSides.RightBottom)));
+                richTextBox.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+                AdjustRichTextBoxSize(richTextBox);
+                uiFlowLayoutPanel1.Controls.Add(richTextBox);
+            }
             else if (type == "img")
             {
                 this.Invoke(new Action((() =>
@@ -777,20 +842,21 @@ namespace chat
                         PictureBox pictureBox = new PictureBox();
                         pictureBox.Size = new Size(200, 200);
                         pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-                        File.Create("C:\\Users\\"+Environment.UserName+"\\RedTeamTemp\\temp");
-                        File.Delete("C:\\Users\\" + Environment.UserName + "\\RedTeamTemp\\temp");
+                        /*File.Create("C:\\Users\\"+Environment.UserName+"\\RedTeamTemp\\temp");
+                        File.Delete("C:\\Users\\" + Environment.UserName + "\\RedTeamTemp\\temp");*/
                         Image image = Image.FromFile("C:\\Users\\" + Environment.UserName + "\\RedTeamTemp\\" + inp);
                         pictureBox.Image = image;
                         uiFlowLayoutPanel1.Controls.Add(pictureBox);
                     }
                     catch (Exception e)
                     {
-                        MessageBox.Show(e.Message,"Err");
+                        MessageBox.Show(e.Message, "Err");
                         //throw;
                     }
-                    
+
                 })));
-            }else if (type=="emoji")
+            }
+            else if (type == "emoji")
             {
                 this.Invoke(new Action((() =>
                 {
@@ -800,13 +866,13 @@ namespace chat
                         pictureBox.Size = new Size(100, 100);
                         pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
                         Assembly assembly = Assembly.GetExecutingAssembly();
-                        Stream imageStream = assembly.GetManifestResourceStream("chat.Resources."+inp); 
+                        Stream imageStream = assembly.GetManifestResourceStream("chat.Resources." + inp);
                         pictureBox.Image = Image.FromStream(imageStream);
                         uiFlowLayoutPanel1.Controls.Add(pictureBox);
                     }
                     catch (Exception e)
                     {
-                        MessageBox.Show(e.Message,"Err");
+                        MessageBox.Show(e.Message, "Err");
                         //throw;
                     }
 
@@ -822,9 +888,82 @@ namespace chat
             }
             else
             {
-                lableadd("Error type emoji", "text");
+                lableadd(emojiname, "text");
+            }
+        }
+        private void RedTeamChat_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
+        {
+            DateTime currentTime = DateTime.Now;
+            if (contrigger)
+            {
+                send("@@@Exit the server@@@", nameset.Text, currentTime.ToString(), "common");
+                clientSocket.Shutdown(SocketShutdown.Both);
+            }
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = "taskkill",
+                Arguments = "/pid " + Process.GetCurrentProcess().Id + " /f",
+                CreateNoWindow = true,
+                UseShellExecute = false
+            };
+            Process process = new Process
+            {
+                StartInfo = psi
+            };
+            process.Start();
+        }
+        private void AdjustRichTextBoxSize(UIRichTextBox richTextBox)
+        {
+            using (Graphics graphics = richTextBox.CreateGraphics())
+            {
+                // 计算文本的大小
+                SizeF textSize = graphics.MeasureString(richTextBox.Text, richTextBox.Font);
+
+                // 设置 UIRichTextBox 的大小
+                richTextBox.Size = new Size((int)textSize.Width+20, (int)textSize.Height+20);
             }
         }
 
+        private void uiButton4_Click(object sender, EventArgs e)
+        {
+            string key = "1234";
+            string enc = Base64Encode(Encoding.UTF8, key);
+            MessageBox.Show(enc);
+            MessageBox.Show(Base64Decode(enc));
+
+        }
+
+        public static string Base64Encode(Encoding encodeType, string source)
+        {
+            string encode = string.Empty;
+            byte[] bytes = encodeType.GetBytes(source);
+            try
+            {
+                encode = Convert.ToBase64String(bytes);
+            }
+            catch
+            {
+                encode = source;
+            }
+            return encode;
+        }
+        public static string Base64Decode(string result)
+        {
+            return Base64Decode(Encoding.UTF8, result);
+        }
+        public static string Base64Decode(Encoding encodeType, string result)
+        {
+            string decode = string.Empty;
+            byte[] bytes = Convert.FromBase64String(result);
+            try
+            {
+                decode = encodeType.GetString(bytes);
+            }
+            catch
+            {
+                decode = result;
+            }
+            return decode;
+        }
     }
 }

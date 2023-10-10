@@ -32,13 +32,15 @@ namespace chat
         /// </summary>
         public void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RedTeamChatf));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RedTeamChatf));
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.uiButton3 = new Sunny.UI.UIButton();
+            this.uiRichTextBox1 = new Sunny.UI.UIRichTextBox();
             this.link_jui = new Sunny.UI.UILinkLabel();
             this.uiSmoothLabel8 = new Sunny.UI.UISmoothLabel();
             this.tabPage3 = new System.Windows.Forms.TabPage();
@@ -54,7 +56,6 @@ namespace chat
             this.uiWaitingBar1 = new Sunny.UI.UIWaitingBar();
             this.con = new Sunny.UI.UIButton();
             this.uiLine2 = new Sunny.UI.UILine();
-            this.uiSmoothLabel7 = new Sunny.UI.UISmoothLabel();
             this.uiSmoothLabel6 = new Sunny.UI.UISmoothLabel();
             this.port = new Sunny.UI.UIIntegerUpDown();
             this.uiSmoothLabel5 = new Sunny.UI.UISmoothLabel();
@@ -102,6 +103,8 @@ namespace chat
             // tabPage4
             // 
             this.tabPage4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
+            this.tabPage4.Controls.Add(this.uiButton3);
+            this.tabPage4.Controls.Add(this.uiRichTextBox1);
             this.tabPage4.Controls.Add(this.link_jui);
             this.tabPage4.Controls.Add(this.uiSmoothLabel8);
             this.tabPage4.Location = new System.Drawing.Point(201, 0);
@@ -109,6 +112,44 @@ namespace chat
             this.tabPage4.Size = new System.Drawing.Size(927, 534);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "about";
+            // 
+            // uiButton3
+            // 
+            this.uiButton3.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.uiButton3.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.uiButton3.Location = new System.Drawing.Point(155, 279);
+            this.uiButton3.MinimumSize = new System.Drawing.Size(1, 1);
+            this.uiButton3.Name = "uiButton3";
+            this.uiButton3.Size = new System.Drawing.Size(134, 25);
+            this.uiButton3.Style = Sunny.UI.UIStyle.Custom;
+            this.uiButton3.TabIndex = 16;
+            this.uiButton3.Text = "uiButton3";
+            this.uiButton3.TipsFont = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.uiButton3.Click += new System.EventHandler(this.uiButton3_Click_1);
+            // 
+            // uiRichTextBox1
+            // 
+            this.uiRichTextBox1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.uiRichTextBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.uiRichTextBox1.FillColor = System.Drawing.Color.SkyBlue;
+            this.uiRichTextBox1.FillColorGradient = true;
+            this.uiRichTextBox1.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.uiRichTextBox1.Location = new System.Drawing.Point(34, 113);
+            this.uiRichTextBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.uiRichTextBox1.MinimumSize = new System.Drawing.Size(1, 1);
+            this.uiRichTextBox1.Name = "uiRichTextBox1";
+            this.uiRichTextBox1.Padding = new System.Windows.Forms.Padding(2);
+            this.uiRichTextBox1.Radius = 11;
+            this.uiRichTextBox1.RadiusSides = ((Sunny.UI.UICornerRadiusSides)((Sunny.UI.UICornerRadiusSides.RightTop | Sunny.UI.UICornerRadiusSides.RightBottom)));
+            this.uiRichTextBox1.ReadOnly = true;
+            this.uiRichTextBox1.RectColor = System.Drawing.Color.Black;
+            this.uiRichTextBox1.RectSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.uiRichTextBox1.ShowText = false;
+            this.uiRichTextBox1.Size = new System.Drawing.Size(264, 62);
+            this.uiRichTextBox1.Style = Sunny.UI.UIStyle.Custom;
+            this.uiRichTextBox1.TabIndex = 15;
+            this.uiRichTextBox1.Text = resources.GetString("uiRichTextBox1.Text");
+            this.uiRichTextBox1.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // link_jui
             // 
@@ -176,7 +217,6 @@ namespace chat
             this.tabPage2.Controls.Add(this.uiWaitingBar1);
             this.tabPage2.Controls.Add(this.con);
             this.tabPage2.Controls.Add(this.uiLine2);
-            this.tabPage2.Controls.Add(this.uiSmoothLabel7);
             this.tabPage2.Controls.Add(this.uiSmoothLabel6);
             this.tabPage2.Controls.Add(this.port);
             this.tabPage2.Controls.Add(this.uiSmoothLabel5);
@@ -239,15 +279,16 @@ namespace chat
             this.uiSmoothLabel9.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.uiSmoothLabel9.Location = new System.Drawing.Point(342, 277);
             this.uiSmoothLabel9.Name = "uiSmoothLabel9";
-            this.uiSmoothLabel9.Size = new System.Drawing.Size(371, 24);
+            this.uiSmoothLabel9.Size = new System.Drawing.Size(254, 56);
             this.uiSmoothLabel9.Style = Sunny.UI.UIStyle.Custom;
             this.uiSmoothLabel9.TabIndex = 17;
-            this.uiSmoothLabel9.Text = "auto disconnect when changing server";
+            this.uiSmoothLabel9.Text = "auto disconnect when \r\nchanging server(rejected)";
             // 
             // autodiscon
             // 
+            this.autodiscon.Enabled = false;
             this.autodiscon.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.autodiscon.Location = new System.Drawing.Point(455, 318);
+            this.autodiscon.Location = new System.Drawing.Point(425, 336);
             this.autodiscon.MinimumSize = new System.Drawing.Size(1, 1);
             this.autodiscon.Name = "autodiscon";
             this.autodiscon.Size = new System.Drawing.Size(67, 33);
@@ -329,26 +370,15 @@ namespace chat
             this.uiLine2.Style = Sunny.UI.UIStyle.Custom;
             this.uiLine2.TabIndex = 11;
             // 
-            // uiSmoothLabel7
-            // 
-            this.uiSmoothLabel7.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiSmoothLabel7.Location = new System.Drawing.Point(27, 165);
-            this.uiSmoothLabel7.Name = "uiSmoothLabel7";
-            this.uiSmoothLabel7.Size = new System.Drawing.Size(250, 20);
-            this.uiSmoothLabel7.Style = Sunny.UI.UIStyle.Custom;
-            this.uiSmoothLabel7.TabIndex = 10;
-            this.uiSmoothLabel7.Text = "to chat anonymously";
-            this.uiSmoothLabel7.Click += new System.EventHandler(this.uiSmoothLabel7_Click);
-            // 
             // uiSmoothLabel6
             // 
-            this.uiSmoothLabel6.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.uiSmoothLabel6.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.uiSmoothLabel6.Location = new System.Drawing.Point(27, 145);
             this.uiSmoothLabel6.Name = "uiSmoothLabel6";
-            this.uiSmoothLabel6.Size = new System.Drawing.Size(278, 20);
+            this.uiSmoothLabel6.Size = new System.Drawing.Size(278, 52);
             this.uiSmoothLabel6.Style = Sunny.UI.UIStyle.Custom;
             this.uiSmoothLabel6.TabIndex = 9;
-            this.uiSmoothLabel6.Text = "Set the name to \"anonymous\"";
+            this.uiSmoothLabel6.Text = "Set the name to \"anonymous\"\r\nto chat anonymously";
             // 
             // port
             // 
@@ -367,10 +397,10 @@ namespace chat
             // 
             // uiSmoothLabel5
             // 
-            this.uiSmoothLabel5.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiSmoothLabel5.Location = new System.Drawing.Point(650, 27);
+            this.uiSmoothLabel5.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.uiSmoothLabel5.Location = new System.Drawing.Point(657, 27);
             this.uiSmoothLabel5.Name = "uiSmoothLabel5";
-            this.uiSmoothLabel5.Size = new System.Drawing.Size(261, 34);
+            this.uiSmoothLabel5.Size = new System.Drawing.Size(210, 34);
             this.uiSmoothLabel5.Style = Sunny.UI.UIStyle.Custom;
             this.uiSmoothLabel5.TabIndex = 7;
             this.uiSmoothLabel5.Text = "set the server port here";
@@ -406,10 +436,10 @@ namespace chat
             // 
             // uiSmoothLabel3
             // 
-            this.uiSmoothLabel3.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiSmoothLabel3.Location = new System.Drawing.Point(342, 131);
+            this.uiSmoothLabel3.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.uiSmoothLabel3.Location = new System.Drawing.Point(366, 131);
             this.uiSmoothLabel3.Name = "uiSmoothLabel3";
-            this.uiSmoothLabel3.Size = new System.Drawing.Size(309, 34);
+            this.uiSmoothLabel3.Size = new System.Drawing.Size(246, 34);
             this.uiSmoothLabel3.Style = Sunny.UI.UIStyle.Custom;
             this.uiSmoothLabel3.TabIndex = 3;
             this.uiSmoothLabel3.Text = "default ip is xxx.xxx.xxx.xxx";
@@ -417,20 +447,20 @@ namespace chat
             // 
             // uiSmoothLabel2
             // 
-            this.uiSmoothLabel2.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiSmoothLabel2.Location = new System.Drawing.Point(356, 27);
+            this.uiSmoothLabel2.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.uiSmoothLabel2.Location = new System.Drawing.Point(390, 27);
             this.uiSmoothLabel2.Name = "uiSmoothLabel2";
-            this.uiSmoothLabel2.Size = new System.Drawing.Size(255, 34);
+            this.uiSmoothLabel2.Size = new System.Drawing.Size(206, 34);
             this.uiSmoothLabel2.Style = Sunny.UI.UIStyle.Custom;
             this.uiSmoothLabel2.TabIndex = 2;
             this.uiSmoothLabel2.Text = "set the server ip here";
             // 
             // uiSmoothLabel1
             // 
-            this.uiSmoothLabel1.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiSmoothLabel1.Location = new System.Drawing.Point(31, 27);
+            this.uiSmoothLabel1.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.uiSmoothLabel1.Location = new System.Drawing.Point(71, 27);
             this.uiSmoothLabel1.Name = "uiSmoothLabel1";
-            this.uiSmoothLabel1.Size = new System.Drawing.Size(224, 38);
+            this.uiSmoothLabel1.Size = new System.Drawing.Size(164, 38);
             this.uiSmoothLabel1.Style = Sunny.UI.UIStyle.Custom;
             this.uiSmoothLabel1.TabIndex = 1;
             this.uiSmoothLabel1.Text = "set ur name here";
@@ -471,7 +501,7 @@ namespace chat
             // Emoji
             // 
             this.Emoji.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Emoji.Location = new System.Drawing.Point(827, 428);
+            this.Emoji.Location = new System.Drawing.Point(827, 434);
             this.Emoji.MinimumSize = new System.Drawing.Size(1, 1);
             this.Emoji.Name = "Emoji";
             this.Emoji.Shape = Sunny.UI.UIShape.Square;
@@ -516,7 +546,7 @@ namespace chat
             // 
             this.uiButton1.Cursor = System.Windows.Forms.Cursors.Hand;
             this.uiButton1.Font = new System.Drawing.Font("宋体", 15F);
-            this.uiButton1.Location = new System.Drawing.Point(650, 428);
+            this.uiButton1.Location = new System.Drawing.Point(650, 434);
             this.uiButton1.MinimumSize = new System.Drawing.Size(1, 1);
             this.uiButton1.Name = "uiButton1";
             this.uiButton1.Size = new System.Drawing.Size(161, 60);
@@ -529,6 +559,7 @@ namespace chat
             // inputbutton
             // 
             this.inputbutton.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
+            this.inputbutton.CanEmpty = true;
             this.inputbutton.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.inputbutton.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.inputbutton.Location = new System.Drawing.Point(9, 428);
@@ -537,8 +568,10 @@ namespace chat
             this.inputbutton.Multiline = true;
             this.inputbutton.Name = "inputbutton";
             this.inputbutton.Padding = new System.Windows.Forms.Padding(5);
+            this.inputbutton.ScrollBarBackColor = System.Drawing.Color.SkyBlue;
+            this.inputbutton.ShowScrollBar = true;
             this.inputbutton.ShowText = false;
-            this.inputbutton.Size = new System.Drawing.Size(625, 60);
+            this.inputbutton.Size = new System.Drawing.Size(625, 76);
             this.inputbutton.Style = Sunny.UI.UIStyle.Custom;
             this.inputbutton.TabIndex = 0;
             this.inputbutton.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
@@ -635,9 +668,10 @@ namespace chat
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "RedTeamChatf";
             this.Style = Sunny.UI.UIStyle.Custom;
-            this.Text = "chat";
+            this.Text = "RedTeamChat";
             this.TextAlignment = System.Drawing.StringAlignment.Center;
             this.ZoomScaleRect = new System.Drawing.Rectangle(19, 19, 1128, 505);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.RedTeamChat_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Controls.SetChildIndex(this.Aside, 0);
             this.Controls.SetChildIndex(this.controlmenu1, 0);
@@ -677,7 +711,6 @@ namespace chat
         private Sunny.UI.UILinkLabel link_jui;
         public Sunny.UI.UISmoothLabel uiSmoothLabel8;
         private Sunny.UI.UILine uiLine2;
-        public Sunny.UI.UISmoothLabel uiSmoothLabel7;
         private Sunny.UI.UIButton con;
         private Sunny.UI.UIWaitingBar uiWaitingBar1;
         private Sunny.UI.UITextBox connecttrit;
@@ -691,6 +724,7 @@ namespace chat
         private Sunny.UI.UIButton refreshfilel;
         private Sunny.UI.UIFlowLayoutPanel uiFlowLayoutPanel1;
         private Sunny.UI.UIAvatar Emoji;
+        private UIRichTextBox uiRichTextBox1;
+        private UIButton uiButton3;
     }
 }
-

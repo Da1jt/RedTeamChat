@@ -4,7 +4,6 @@ E:\Project-table\c#project\chat\chat\bin\Debug\chat.pdb
 E:\Project-table\c#project\chat\chat\bin\Debug\SunnyUI.Common.dll
 E:\Project-table\c#project\chat\chat\bin\Debug\SunnyUI.dll
 E:\Project-table\c#project\chat\chat\obj\Debug\chat.csproj.AssemblyReference.cache
-E:\Project-table\c#project\chat\chat\obj\Debug\chat.Form1.resources
 E:\Project-table\c#project\chat\chat\obj\Debug\chat.Properties.Resources.resources
 E:\Project-table\c#project\chat\chat\obj\Debug\chat.csproj.GenerateResource.cache
 E:\Project-table\c#project\chat\chat\obj\Debug\chat.csproj.CoreCompileInputs.cache
@@ -12,3 +11,7 @@ E:\Project-table\c#project\chat\chat\obj\Debug\chat.csproj.CopyComplete
 E:\Project-table\c#project\chat\chat\obj\Debug\chat.exe
 E:\Project-table\c#project\chat\chat\obj\Debug\chat.pdb
 E:\Project-table\c#project\chat\chat\obj\Debug\chat.Resource1.resources
+E:\Project-table\c#project\chat\chat\obj\Debug\chat.g.resources
+E:\Project-table\c#project\chat\chat\obj\Debug\chat.emoji.resources
+E:\Project-table\c#project\chat\chat\obj\Debug\chat.RedTeamChatf.resources
+E:\Project-table\c#project\chat\chat\obj\Debug\chat.inpfilename.resources

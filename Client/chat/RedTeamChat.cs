@@ -19,18 +19,6 @@ namespace chat
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new RedTeamChatf());
-            ProcessStartInfo psi = new ProcessStartInfo
-            {
-                FileName = "taskkill",
-                Arguments = "/pid " + Process.GetCurrentProcess().Id + " /f",
-                CreateNoWindow = true,
-                UseShellExecute = false
-            };
-            Process process = new Process
-            {
-                StartInfo = psi
-            };
-            process.Start();
         }
     }
 }

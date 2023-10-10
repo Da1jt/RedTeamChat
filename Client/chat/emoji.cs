@@ -22,9 +22,6 @@ namespace chat
         {
             InitializeComponent();
             GlobalData.emojiset = "";
-            //this.Width = 800;   // 设置宽度为 800 像素
-            //this.Height = 600;  // 设置高度为 600 像素
-            //doge.Image = Image.FromFile("./emoji/emoji-doge.jpg");
         }
 
         public void InitializeComponent()
