@@ -32,15 +32,13 @@ namespace chat
         /// </summary>
         public void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RedTeamChatf));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RedTeamChatf));
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.uiButton3 = new Sunny.UI.UIButton();
-            this.uiRichTextBox1 = new Sunny.UI.UIRichTextBox();
             this.link_jui = new Sunny.UI.UILinkLabel();
             this.uiSmoothLabel8 = new Sunny.UI.UISmoothLabel();
             this.tabPage3 = new System.Windows.Forms.TabPage();
@@ -69,7 +67,7 @@ namespace chat
             this.Emoji = new Sunny.UI.UIAvatar();
             this.uiFlowLayoutPanel1 = new Sunny.UI.UIFlowLayoutPanel();
             this.uiLine1 = new Sunny.UI.UILine();
-            this.uiButton1 = new Sunny.UI.UIButton();
+            this.sd = new Sunny.UI.UIButton();
             this.inputbutton = new Sunny.UI.UITextBox();
             this.controlmenu1 = new Sunny.UI.UITabControlMenu();
             this.tabPage5 = new System.Windows.Forms.TabPage();
@@ -103,8 +101,6 @@ namespace chat
             // tabPage4
             // 
             this.tabPage4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
-            this.tabPage4.Controls.Add(this.uiButton3);
-            this.tabPage4.Controls.Add(this.uiRichTextBox1);
             this.tabPage4.Controls.Add(this.link_jui);
             this.tabPage4.Controls.Add(this.uiSmoothLabel8);
             this.tabPage4.Location = new System.Drawing.Point(201, 0);
@@ -112,44 +108,6 @@ namespace chat
             this.tabPage4.Size = new System.Drawing.Size(927, 534);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "about";
-            // 
-            // uiButton3
-            // 
-            this.uiButton3.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.uiButton3.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiButton3.Location = new System.Drawing.Point(155, 279);
-            this.uiButton3.MinimumSize = new System.Drawing.Size(1, 1);
-            this.uiButton3.Name = "uiButton3";
-            this.uiButton3.Size = new System.Drawing.Size(134, 25);
-            this.uiButton3.Style = Sunny.UI.UIStyle.Custom;
-            this.uiButton3.TabIndex = 16;
-            this.uiButton3.Text = "uiButton3";
-            this.uiButton3.TipsFont = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiButton3.Click += new System.EventHandler(this.uiButton3_Click_1);
-            // 
-            // uiRichTextBox1
-            // 
-            this.uiRichTextBox1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.uiRichTextBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.uiRichTextBox1.FillColor = System.Drawing.Color.SkyBlue;
-            this.uiRichTextBox1.FillColorGradient = true;
-            this.uiRichTextBox1.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiRichTextBox1.Location = new System.Drawing.Point(34, 113);
-            this.uiRichTextBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.uiRichTextBox1.MinimumSize = new System.Drawing.Size(1, 1);
-            this.uiRichTextBox1.Name = "uiRichTextBox1";
-            this.uiRichTextBox1.Padding = new System.Windows.Forms.Padding(2);
-            this.uiRichTextBox1.Radius = 11;
-            this.uiRichTextBox1.RadiusSides = ((Sunny.UI.UICornerRadiusSides)((Sunny.UI.UICornerRadiusSides.RightTop | Sunny.UI.UICornerRadiusSides.RightBottom)));
-            this.uiRichTextBox1.ReadOnly = true;
-            this.uiRichTextBox1.RectColor = System.Drawing.Color.Black;
-            this.uiRichTextBox1.RectSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
-            this.uiRichTextBox1.ShowText = false;
-            this.uiRichTextBox1.Size = new System.Drawing.Size(264, 62);
-            this.uiRichTextBox1.Style = Sunny.UI.UIStyle.Custom;
-            this.uiRichTextBox1.TabIndex = 15;
-            this.uiRichTextBox1.Text = resources.GetString("uiRichTextBox1.Text");
-            this.uiRichTextBox1.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // link_jui
             // 
@@ -490,7 +448,7 @@ namespace chat
             this.tabPage1.Controls.Add(this.Emoji);
             this.tabPage1.Controls.Add(this.uiFlowLayoutPanel1);
             this.tabPage1.Controls.Add(this.uiLine1);
-            this.tabPage1.Controls.Add(this.uiButton1);
+            this.tabPage1.Controls.Add(this.sd);
             this.tabPage1.Controls.Add(this.inputbutton);
             this.tabPage1.Location = new System.Drawing.Point(201, 0);
             this.tabPage1.Name = "tabPage1";
@@ -542,19 +500,19 @@ namespace chat
             this.uiLine1.Style = Sunny.UI.UIStyle.Custom;
             this.uiLine1.TabIndex = 2;
             // 
-            // uiButton1
+            // sd
             // 
-            this.uiButton1.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.uiButton1.Font = new System.Drawing.Font("宋体", 15F);
-            this.uiButton1.Location = new System.Drawing.Point(650, 434);
-            this.uiButton1.MinimumSize = new System.Drawing.Size(1, 1);
-            this.uiButton1.Name = "uiButton1";
-            this.uiButton1.Size = new System.Drawing.Size(161, 60);
-            this.uiButton1.Style = Sunny.UI.UIStyle.Custom;
-            this.uiButton1.TabIndex = 1;
-            this.uiButton1.Text = "send";
-            this.uiButton1.TipsFont = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiButton1.Click += new System.EventHandler(this.uiButton1_Click);
+            this.sd.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.sd.Font = new System.Drawing.Font("宋体", 15F);
+            this.sd.Location = new System.Drawing.Point(650, 434);
+            this.sd.MinimumSize = new System.Drawing.Size(1, 1);
+            this.sd.Name = "sd";
+            this.sd.Size = new System.Drawing.Size(161, 60);
+            this.sd.Style = Sunny.UI.UIStyle.Custom;
+            this.sd.TabIndex = 1;
+            this.sd.Text = "send";
+            this.sd.TipsFont = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.sd.Click += new System.EventHandler(this.uiButton1_Click);
             // 
             // inputbutton
             // 
@@ -661,11 +619,14 @@ namespace chat
             // 
             // RedTeamChatf
             // 
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.AcceptButton = this.sd;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.ClientSize = new System.Drawing.Size(1128, 572);
+            this.CloseAskString = "Are you sure you want to exit?";
             this.Controls.Add(this.controlmenu1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "RedTeamChatf";
             this.Style = Sunny.UI.UIStyle.Custom;
             this.Text = "RedTeamChat";
@@ -705,7 +666,7 @@ namespace chat
         public Sunny.UI.UITextBox nameset;
         public System.Windows.Forms.TabPage tabPage1;
         public Sunny.UI.UILine uiLine1;
-        public Sunny.UI.UIButton uiButton1;
+        public Sunny.UI.UIButton sd;
         public Sunny.UI.UITextBox inputbutton;
         public Sunny.UI.UITabControlMenu controlmenu1;
         private Sunny.UI.UILinkLabel link_jui;
@@ -724,7 +685,5 @@ namespace chat
         private Sunny.UI.UIButton refreshfilel;
         private Sunny.UI.UIFlowLayoutPanel uiFlowLayoutPanel1;
         private Sunny.UI.UIAvatar Emoji;
-        private UIRichTextBox uiRichTextBox1;
-        private UIButton uiButton3;
     }
 }

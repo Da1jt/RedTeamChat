@@ -28,6 +28,7 @@ namespace chat
             discon.Hide();
             Application.EnableVisualStyles();
             refreshfilel.Enabled = false;
+            this.Text = "RedTeamChat - Disconnected";
             server.Text = "127.0.0.1";
             this.Icon = Properties.Resources.chat;
             uiDataGridView1.Dock = DockStyle.Fill;
@@ -139,11 +140,11 @@ namespace chat
                                     emojianalysis(firstString);
                                 }));
                             }
-                            else if (firstString.StartsWith("@@@") && firstString.EndsWith("@@@"))
+                            else if (firstString.EndsWith("@@@"))
                             {
                                 this.Invoke(new Action(() =>
                                 {
-                                    lableadd(" User:  " + secondString + " time:  " + thirdString + "\n" + firstString, "text");
+                                    lableadd(" User:  " + secondString + " time:  " + thirdString + "\n[" + firstString+"]", "sysinfo");
                                 }));
                             }
                             else
@@ -206,11 +207,11 @@ namespace chat
                                             emojianalysis(firstString);
                                         }));
                                     }
-                                    else if (firstString.StartsWith("@@@") && firstString.EndsWith("@@@"))
+                                    else if (firstString.EndsWith("@@@"))
                                     {
                                         this.Invoke(new Action(() =>
                                         {
-                                            lableadd("\n" + " User:  " + secondString + " time:  " + thirdString + "   " + firstString + "\n", "text");
+                                            lableadd("\n" + " User:  " + secondString + " time:  " + thirdString + "\n[" + firstString + "]\n", "sysinfo");
                                         }));
                                     }
                                     else
@@ -271,11 +272,11 @@ namespace chat
                                         emojianalysis(firstString);
                                     }));
                                 }
-                                else if (firstString.StartsWith("@@@") && firstString.EndsWith("@@@"))
+                                else if (firstString.EndsWith("@@@"))
                                 {
                                     this.Invoke(new Action(() =>
                                     {
-                                        lableadd(" User:  " + secondString + " time:  " + thirdString + "\n" + firstString, "text");
+                                        lableadd(" User:  " + secondString + " time:  " + thirdString + "\n" + firstString, "sysinfo");
                                     }));
                                 }
                                 else
@@ -519,6 +520,7 @@ namespace chat
                     };
 
                     process.Start();*/
+                    this.Text = "RedTeamChat - "+nameset.Text+" - "+serverIP+":"+serverPort;
                     connecttrit.Text = "Connected";
                     nameset.Enabled = false;
                     con.Enabled = false;
@@ -587,7 +589,8 @@ namespace chat
                     {
                         connecttrit.Text = "Disconnected";
                         nameset.Enabled = true;
-                        lableadd("Disconnected", "text");
+                        this.Text = "RedTeamChat - Disconnected";
+                        lableadd("Self-[Disconnected]", "sysinfo");
                         discon.Hide();
                         con.Enabled = true;
                     })));
@@ -817,6 +820,7 @@ namespace chat
                     Label label = new Label();
                     label.Text = inp;
                     label.AutoSize = true;
+                    label.ForeColor = Color.Teal;
                     uiFlowLayoutPanel1.Controls.Add(label);
                     //label.ForeColor = Color.Teal;
                 })));
@@ -876,6 +880,16 @@ namespace chat
                         //throw;
                     }
 
+                })));
+            }else if (type == "sysinfo")
+            {
+                this.Invoke(new Action((() =>
+                {
+                    Label label = new Label();
+                    label.Text = inp;
+                    label.AutoSize = true;
+                    label.ForeColor = Color.Gray;
+                    uiFlowLayoutPanel1.Controls.Add(label);
                 })));
             }
         }
