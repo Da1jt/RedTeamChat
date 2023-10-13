@@ -24,18 +24,26 @@ namespace chat
     {
         public RedTeamChatf()
         {
-            InitializeComponent();
-            discon.Hide();
-            Application.EnableVisualStyles();
-            refreshfilel.Enabled = false;
-            this.Text = "RedTeamChat - Disconnected";
-            server.Text = "127.0.0.1";
-            this.Icon = Properties.Resources.chat;
-            uiDataGridView1.Dock = DockStyle.Fill;
-            uiDataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            uiDataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-            uiDataGridView1.AllowUserToAddRows = false;
-            uiDataGridView1.ReadOnly = true;
+            try
+            {
+                InitializeComponent();
+                discon.Hide();
+                Application.EnableVisualStyles();
+                refreshfilel.Enabled = false;
+                this.Text = "RedTeamChat - Disconnected";
+                server.Text = "127.0.0.1";
+                this.Icon = Properties.Resources.chat;
+                uiDataGridView1.Dock = DockStyle.Fill;
+                uiDataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+                uiDataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+                uiDataGridView1.AllowUserToAddRows = false;
+                uiDataGridView1.ReadOnly = true;
+                uiDataGridView1.AllowUserToDeleteRows = false;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Err");
+            }
         }
         [DllImport("user32.dll")]
         public static extern bool FlashWindow(IntPtr hwnd, bool bInvert);
@@ -496,8 +504,34 @@ namespace chat
             {
                 try
                 {
-                    IPAddress serverIP = IPAddress.Parse(server.Text);
-                    int serverPort = port.Value;
+                    IPAddress serverIP;
+                    if (!IPAddress.TryParse(server.Text, out serverIP))
+                    {
+                        IPAddress[] ipAddresses = Dns.GetHostAddresses(server.Text);
+                        if (ipAddresses.Length != 1)
+                        {
+                            string[] dips = new string[ipAddresses.Length];
+                            for (int i = 0; i < ipAddresses.Length; i++)
+                            {
+                                dips[i] = ipAddresses[i].ToString();
+                            }
+                            string finout = "[The domain name contains multiple IP addresses. Please specify a single IP or use an IP-only domain name]\nIncluded IPs:\n";
+                            for (int i = 0; i < Math.Min(6, dips.Length); i++)
+                            {
+                                finout += dips[i] + "\n";
+                            }
+                            if (dips.Length > 6)
+                            {
+                                finout += "...";
+                            }
+                            MessageBox.Show(finout, "Error");
+                            return;
+                        }
+                        serverIP = ipAddresses[0];
+                    }
+
+                    int serverPort = (int)port.Value;
+
                     IPEndPoint serverEP = new IPEndPoint(serverIP, serverPort);
                     clientSocket.Connect(serverEP);
                     consolee.Text += "Connected to the server " + serverIP + " port " + serverPort + "\n------------\n";
@@ -507,6 +541,7 @@ namespace chat
                     receiveThread.Start(clientSocket);
                     this.Text = "RedTeamChat  " + nameset.Text;
                     contrigger = true;
+                    
                     /*ProcessStartInfo psi = new ProcessStartInfo
                     {
                         FileName = "./daemon.exe",
@@ -573,7 +608,14 @@ namespace chat
 
         private void uiSwitch1_ValueChanged(object sender, bool value)
         {
-            autodisconnect = true;
+            if (autodiscon.Active==true)
+            {
+                autodisconnect = true;
+            }
+            else
+            {
+                autodisconnect = false;
+            }
         }
 
         private void discon_Click(object sender, EventArgs e)

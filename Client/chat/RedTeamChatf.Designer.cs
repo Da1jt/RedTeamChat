@@ -237,6 +237,7 @@ namespace chat
             this.uiSmoothLabel9.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.uiSmoothLabel9.Location = new System.Drawing.Point(342, 277);
             this.uiSmoothLabel9.Name = "uiSmoothLabel9";
+            this.uiSmoothLabel9.RectColor = System.Drawing.Color.Silver;
             this.uiSmoothLabel9.Size = new System.Drawing.Size(254, 56);
             this.uiSmoothLabel9.Style = Sunny.UI.UIStyle.Custom;
             this.uiSmoothLabel9.TabIndex = 17;
