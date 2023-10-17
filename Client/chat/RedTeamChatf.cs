@@ -17,6 +17,8 @@ using static chat.emoji;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 using Sunny.UI.Win32;
 using System.Xml.Linq;
+using System.Runtime.InteropServices;
+using System.Net.NetworkInformation;
 
 namespace chat
 {
@@ -28,26 +30,45 @@ namespace chat
             {
                 InitializeComponent();
                 discon.Hide();
+                this.Name = "RedTeamChat";
                 Application.EnableVisualStyles();
                 refreshfilel.Enabled = false;
                 this.Text = "RedTeamChat - Disconnected";
                 server.Text = "127.0.0.1";
                 this.Icon = Properties.Resources.chat;
-                uiDataGridView1.Dock = DockStyle.Fill;
-                uiDataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-                uiDataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-                uiDataGridView1.AllowUserToAddRows = false;
-                uiDataGridView1.ReadOnly = true;
-                uiDataGridView1.AllowUserToDeleteRows = false;
+                Serverfilegrid.Dock = DockStyle.Fill;
+                Serverfilegrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+                Serverfilegrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+                Serverfilegrid.AllowUserToAddRows = false;
+                Serverfilegrid.ReadOnly = true;
+                Serverfilegrid.AllowUserToDeleteRows = false;
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "Err");
+                consolee.Text += "Initial Failed\n" + e.Message;
             }
+
+            consolee.Text += "Initial Success\n";
+
         }
         [DllImport("user32.dll")]
         public static extern bool FlashWindow(IntPtr hwnd, bool bInvert);
-        bool contrigger = false, connectb = false, autodisconnect = false;
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+
+        // 控制滚动条位置
+        private void SetScrollPosition(UIFlowLayoutPanel control)
+        {
+            control.VerticalScroll.Value = control.VerticalScroll.Maximum;
+            control.PerformLayout();
+
+            if (control.Controls.Count > 0)
+                control.ScrollControlIntoView(control.Controls[control.Controls.Count - 1]);
+        }
+
+        bool contrigger = false, connectb = false, autodisconnect = false, IntranetSockStatus = false;
         private Socket clientSocket;
         public void send(string msge, string name, string time, string type)
         {
@@ -82,7 +103,8 @@ namespace chat
                         consolee.Text += "Exception: " + e.Message + "\n";
                     }));
                 }
-            }else if (type == "encode")
+            }
+            else if (type == "encode")
             {
                 try
                 {
@@ -109,6 +131,7 @@ namespace chat
             else if (rcvdata == "log") return 3;
             else if (rcvdata == "file") return 4;
             else if (rcvdata == "emsg") return 5;
+            else if (rcvdata == "smsg") return 6;
             return 0;
         }
         public void ReceiveData(object clientSocket)
@@ -152,7 +175,7 @@ namespace chat
                             {
                                 this.Invoke(new Action(() =>
                                 {
-                                    lableadd(" User:  " + secondString + " time:  " + thirdString + "\n[" + firstString+"]", "sysinfo");
+                                    lableadd(" User:  " + secondString + " time:  " + thirdString + "\n[" + firstString + "]", "sysinfo");
                                 }));
                             }
                             else
@@ -172,18 +195,14 @@ namespace chat
                         string[] parts = pt2.Split(new string[] { "//" }, StringSplitOptions.None);
                         this.Invoke(new Action(() =>
                         {
-                            consolee.Text += "[-----------\n";
-                        }));
-                        for (int i = 0; i < Tagn; i++)
-                        {
-                            this.Invoke(new Action(() =>
+                            consolee.Text += "[----Online-UserList-Start---\n";
+                            for (int i = 0; i <= Tagn; i++)
                             {
+
                                 consolee.Text += " " + parts[i] + "\n";
-                            }));
-                        }
-                        this.Invoke(new Action(() =>
-                        {
-                            consolee.Text += "-----------]\n";
+
+                            }
+                            consolee.Text += "----Online-UserList-End---]\n";
                         }));
                     }
                     else if (typedet == 3)
@@ -248,7 +267,7 @@ namespace chat
                     }
                     else if (typedet == 4)
                     {
-
+                        File_System(pt2);
                     }
                     else if (typedet == 5)
                     {
@@ -298,6 +317,48 @@ namespace chat
                             }
                         }
                     }
+                    else if (typedet == 6)
+                    {
+                        if (pt2.StartsWith(nameset.Text))
+                        {
+                            string[] parts = pt2.Split(new string[] { "//" }, StringSplitOptions.None);
+                            string firstString, secondString, thirdString, fourthString;
+                            if (parts.Length == 4)
+                            {
+                                firstString = parts[1];
+                                secondString = parts[2];
+                                thirdString = parts[3];
+                                if (nameset.Text != secondString)
+                                {
+                                    tips();
+                                }
+
+                                if (firstString.StartsWith("[") && firstString.EndsWith("]"))
+                                {
+                                    this.Invoke(new Action(() =>
+                                    {
+                                        lableadd(" User:  " + secondString + " time:  " + thirdString, "text");
+                                        emojianalysis(firstString);
+                                    }));
+                                }
+                                else if (firstString.EndsWith("@@@"))
+                                {
+                                    this.Invoke(new Action(() =>
+                                    {
+                                        lableadd(" User:  " + secondString + " time:  " + thirdString + "\n" + firstString, "sysinfo");
+                                    }));
+                                }
+                                else
+                                {
+                                    this.Invoke(new Action(() =>
+                                    {
+                                        lableadd(" User:  " + secondString + " time:  " + thirdString + "\n", "text");
+                                        lableadd(firstString, "msgbox");
+                                    }));
+                                }
+                            }
+                        }
+                    }
                     else
                     {
                         this.Invoke(new Action(() =>
@@ -309,6 +370,11 @@ namespace chat
             }
             catch (Exception e)
             {
+                if (e.Message == "远程主机强迫关闭了一个现有的连接。")
+                {
+                    lableadd("服务器断开连接", "sysinfo");
+                    disconnectgo();
+                }
                 consolee.Invoke(new Action(() =>
                 {
                     consolee.Text += "Exception: " + e.Message + "\n";
@@ -471,7 +537,7 @@ namespace chat
         public void con_Click(object sender, EventArgs e)
         {
 
-            if (connectb && autodisconnect)
+            if (connectb/* && autodisconnect*/)
             {
                 try
                 {
@@ -534,28 +600,12 @@ namespace chat
 
                     IPEndPoint serverEP = new IPEndPoint(serverIP, serverPort);
                     clientSocket.Connect(serverEP);
-                    consolee.Text += "Connected to the server " + serverIP + " port " + serverPort + "\n------------\n";
+                    consolee.Text += "\n------------\n" + "Connected to the server " + serverIP + " port " + serverPort + "\n------------\n";
                     tips();
-                    //uiFlowLayoutPanel1.Controls.Clear();
                     Thread receiveThread = new Thread(ReceiveData);
                     receiveThread.Start(clientSocket);
-                    this.Text = "RedTeamChat  " + nameset.Text;
                     contrigger = true;
-                    
-                    /*ProcessStartInfo psi = new ProcessStartInfo
-                    {
-                        FileName = "./daemon.exe",
-                        Arguments = serverIP + " " + serverPort + " " + nameset.Text,
-                        CreateNoWindow = true,
-                        UseShellExecute = false
-                    };
-                    Process process = new Process
-                    {
-                        StartInfo = psi
-                    };
-
-                    process.Start();*/
-                    this.Text = "RedTeamChat - "+nameset.Text+" - "+serverIP+":"+serverPort;
+                    this.Text = "RedTeamChat - " + nameset.Text + " - " + serverIP + ":" + serverPort;
                     connecttrit.Text = "Connected";
                     nameset.Enabled = false;
                     con.Enabled = false;
@@ -608,7 +658,7 @@ namespace chat
 
         private void uiSwitch1_ValueChanged(object sender, bool value)
         {
-            if (autodiscon.Active==true)
+            if (autodiscon.Active == true)
             {
                 autodisconnect = true;
             }
@@ -620,34 +670,28 @@ namespace chat
 
         private void discon_Click(object sender, EventArgs e)
         {
+            disconnectgo();
+        }
+
+        private void disconnectgo()
+        {
             if (contrigger)
             {
                 try
                 {
-                    DateTime currentTime = DateTime.Now;
-                    send("@@@Exit the server@@@", nameset.Text, currentTime.ToString(), "common");
-                    clientSocket.Shutdown(SocketShutdown.Both);
                     this.Invoke(new Action((() =>
                     {
+                        DateTime currentTime = DateTime.Now;
+                        send("@@@Exit the server@@@", nameset.Text, currentTime.ToString(), "common");
+                        clientSocket.Shutdown(SocketShutdown.Both);
                         connecttrit.Text = "Disconnected";
                         nameset.Enabled = true;
+                        consolee.Text += "Disconnected\n";
                         this.Text = "RedTeamChat - Disconnected";
                         lableadd("Self-[Disconnected]", "sysinfo");
                         discon.Hide();
                         con.Enabled = true;
                     })));
-                    /*ProcessStartInfo psi = new ProcessStartInfo
-                    {
-                        FileName = "taskkill",
-                        Arguments = "/im daemon.exe /f",
-                        CreateNoWindow = true,
-                        UseShellExecute = false
-                    };
-                    Process process = new Process
-                    {
-                        StartInfo = psi
-                    };
-                    process.Start();*/
                 }
                 catch (Exception exception)
                 {
@@ -718,6 +762,43 @@ namespace chat
 
         }
 
+        private int filedef(string rd)
+        {
+            if (rd.StartsWith("FileDisplay")) return 1;
+            else if (rd.StartsWith("FileInfo")) return 2;
+            else return 0;
+        }
+        private void File_System(string rawdata)
+        {
+            int rete = filedef(rawdata);
+            if (rete == 1)
+            {
+                string raw2 = string.Empty;
+                raw2 = rawdata.Substring(11);
+                try
+                {
+                    int Tagn = TagNumbGet(rawdata, "//");
+                    string[] parts = rawdata.Split(new string[] { "//" }, StringSplitOptions.None);
+                    for (int i = 0; i < Tagn; i++)
+                    {
+
+                    }
+                }
+                catch (Exception e)
+                {
+                    this.Invoke(new Action(() =>
+                    {
+                        consolee.Text += e.Message;
+                    }));
+                    throw;
+                }
+            }
+            else if (rete == 2)
+            {
+
+            }
+
+        }
         private void refreshfilel_Click(object sender, EventArgs e)
         {
 
@@ -761,19 +842,15 @@ namespace chat
             contextMenuStrip1.Items.Add(renameFileToolStripMenuItem);
 
             // 将右键菜单关联到 DataGridView 控件
-            uiDataGridView1.ContextMenuStrip = contextMenuStrip1;
-            uiDataGridView1.DataSource = dataTable;
+            Serverfilegrid.ContextMenuStrip = contextMenuStrip1;
+            Serverfilegrid.DataSource = dataTable;
         }
 
-        private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
-        {
-
-        }
 
         private void RemoveFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // 获取当前选中的行
-            DataGridViewRow selectedRow = uiDataGridView1.CurrentRow;
+            DataGridViewRow selectedRow = Serverfilegrid.CurrentRow;
 
             if (selectedRow != null)
             {
@@ -782,7 +859,7 @@ namespace chat
                 MessageBox.Show($"移除文件: {fileName}", "提示");
 
                 // 移除选中的行
-                uiDataGridView1.Rows.Remove(selectedRow);
+                Serverfilegrid.Rows.Remove(selectedRow);
             }
         }
 
@@ -818,7 +895,7 @@ namespace chat
         private void RenameFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // 获取当前选中的行
-            DataGridViewRow selectedRow = uiDataGridView1.CurrentRow;
+            DataGridViewRow selectedRow = Serverfilegrid.CurrentRow;
 
             if (selectedRow != null)
             {
@@ -840,19 +917,6 @@ namespace chat
             }
         }
 
-        private void uiButton3_Click_1(object sender, EventArgs e)
-        {
-            UIRichTextBox richTextBox = new UIRichTextBox();
-            richTextBox.Text = "123\n123\n";
-            richTextBox.ReadOnly = true;
-            richTextBox.Radius = 11;
-            richTextBox.FillColor = Color.SkyBlue;
-            richTextBox.RadiusSides = ((Sunny.UI.UICornerRadiusSides)((Sunny.UI.UICornerRadiusSides.RightTop | Sunny.UI.UICornerRadiusSides.RightBottom)));
-            richTextBox.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            AdjustRichTextBoxSize(richTextBox);
-            tabPage5.Controls.Add(richTextBox);
-        }
-
         private void lableadd(string inp, string type)
         {
             if (type == "text")
@@ -864,7 +928,7 @@ namespace chat
                     label.AutoSize = true;
                     label.ForeColor = Color.Teal;
                     uiFlowLayoutPanel1.Controls.Add(label);
-                    //label.ForeColor = Color.Teal;
+                    uiFlowLayoutPanel1.ScrollControlIntoView(label);
                 })));
             }
             else if (type == "msgbox")
@@ -874,6 +938,9 @@ namespace chat
                 richTextBox.ReadOnly = true;
                 richTextBox.Radius = 11;
                 richTextBox.FillColor = Color.SkyBlue;
+                richTextBox.AutoWordSelection = true;
+                /*richTextBox.MouseEnter += uiFlowLayoutPanel1Control_enter;
+                richTextBox.MouseLeave += uiFlowLayoutPanel1Control_leave;*/
                 richTextBox.RadiusSides = ((Sunny.UI.UICornerRadiusSides)((Sunny.UI.UICornerRadiusSides.RightTop | Sunny.UI.UICornerRadiusSides.RightBottom)));
                 richTextBox.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
                 AdjustRichTextBoxSize(richTextBox);
@@ -893,37 +960,30 @@ namespace chat
                         Image image = Image.FromFile("C:\\Users\\" + Environment.UserName + "\\RedTeamTemp\\" + inp);
                         pictureBox.Image = image;
                         uiFlowLayoutPanel1.Controls.Add(pictureBox);
+                        uiFlowLayoutPanel1.ScrollControlIntoView(pictureBox);
+
                     }
                     catch (Exception e)
                     {
                         MessageBox.Show(e.Message, "Err");
                         //throw;
                     }
-
                 })));
             }
             else if (type == "emoji")
             {
-                this.Invoke(new Action((() =>
+                this.Invoke(new Action(() =>
                 {
-                    try
-                    {
-                        PictureBox pictureBox = new PictureBox();
-                        pictureBox.Size = new Size(100, 100);
-                        pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-                        Assembly assembly = Assembly.GetExecutingAssembly();
-                        Stream imageStream = assembly.GetManifestResourceStream("chat.Resources." + inp);
-                        pictureBox.Image = Image.FromStream(imageStream);
-                        uiFlowLayoutPanel1.Controls.Add(pictureBox);
-                    }
-                    catch (Exception e)
-                    {
-                        MessageBox.Show(e.Message, "Err");
-                        //throw;
-                    }
-
-                })));
-            }else if (type == "sysinfo")
+                    PictureBox pictureBox = new PictureBox();
+                    pictureBox.Size = new Size(80, 80);
+                    pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+                    System.Reflection.Assembly assembly = GetType().Assembly;
+                    Stream emg = assembly.GetManifestResourceStream("chat.Resources." + inp + ".png");
+                    pictureBox.Image = Image.FromStream(emg);
+                    uiFlowLayoutPanel1.Controls.Add(pictureBox);
+                }));
+            }
+            else if (type == "sysinfo")
             {
                 this.Invoke(new Action((() =>
                 {
@@ -932,6 +992,8 @@ namespace chat
                     label.AutoSize = true;
                     label.ForeColor = Color.Gray;
                     uiFlowLayoutPanel1.Controls.Add(label);
+                    uiFlowLayoutPanel1.ScrollControlIntoView(label);
+                    SetScrollPosition(uiFlowLayoutPanel1);
                 })));
             }
         }
@@ -940,7 +1002,11 @@ namespace chat
         {
             if (emojiname == "[Doge]")
             {
-                lableadd("Doge.jpg", "emoji");
+                lableadd("Doge", "emoji");
+            }
+            else if (emojiname == "[E]")
+            {
+                lableadd("E", "emoji");
             }
             else
             {
@@ -976,19 +1042,9 @@ namespace chat
                 SizeF textSize = graphics.MeasureString(richTextBox.Text, richTextBox.Font);
 
                 // 设置 UIRichTextBox 的大小
-                richTextBox.Size = new Size((int)textSize.Width+20, (int)textSize.Height+20);
+                richTextBox.Size = new Size((int)textSize.Width + 20, (int)textSize.Height + 20);
             }
         }
-
-        private void uiButton4_Click(object sender, EventArgs e)
-        {
-            string key = "1234";
-            string enc = Base64Encode(Encoding.UTF8, key);
-            MessageBox.Show(enc);
-            MessageBox.Show(Base64Decode(enc));
-
-        }
-
         public static string Base64Encode(Encoding encodeType, string source)
         {
             string encode = string.Empty;
@@ -1020,6 +1076,105 @@ namespace chat
                 decode = result;
             }
             return decode;
+        }
+        private void uiFlowLayoutPanel1Control_MouseWheel(object sender, MouseEventArgs e)
+        {
+            int scrollLines = SystemInformation.MouseWheelScrollLines;
+            int scrollAmount = e.Delta * scrollLines / 120;
+
+            uiFlowLayoutPanel1.VerticalScroll.Value -= scrollAmount;
+        }
+        private TcpListener listener;
+        private bool isListening = false;
+        private Thread intranetThread;
+
+        private void intranetfind_Click(object sender, EventArgs e)
+        {
+            if (isListening)
+            {
+                isListening = false;
+            }
+            else
+            {
+                isListening = true;
+            }
+            interanet();
+        }
+
+        /*private void intranetfind_Click(object sender, EventArgs e)
+{
+       this.Invoke(new Action((() =>
+       {
+           consolee.Text += "Interanet Server Scan Start\n";
+       })));
+       listener = new Socket(SocketType.Dgram, ProtocolType.Udp); // 初始化listener
+       IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 8085);
+       listener.Bind(endPoint);
+       intranetThread = new Thread((() => interanet(listener)));
+       intranetThread.Start();
+       Thread.Sleep(TimeSpan.FromSeconds(1));
+
+}*/
+
+        private void fadetext(string text)
+        {
+            UISmoothLabel smoothLabel = new UISmoothLabel();
+            smoothLabel.Text = text;
+            smoothLabel.Size = new Size(300, 300);
+            smoothLabel.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+
+            controlmenu1.SelectedTab.Controls.Add(smoothLabel);
+            while (true)
+            {
+                smoothLabel.BackColor = System.Drawing.Color.FromArgb(smoothLabel.BackColor.A - 3, smoothLabel.BackColor);
+                smoothLabel.ForeColor = System.Drawing.Color.FromArgb(smoothLabel.ForeColor.A - 3, smoothLabel.ForeColor);
+                if (smoothLabel.BackColor.A <= 0 && smoothLabel.ForeColor.A <= 0)
+                {
+                    controlmenu1.SelectedTab.Controls.Remove(smoothLabel);
+                    break;
+                }
+            }
+        }
+
+
+        private void interanet()
+        {
+            if (isListening)
+            {
+                // 开始监听
+                int port = 1234; // 将端口号替换为你希望监听的实际端口
+                listener = new TcpListener(IPAddress.Any, port);
+                listener.Start();
+
+                // 启动异步接受客户端连接的操作
+                listener.BeginAcceptTcpClient(OnClientConnected, null);
+
+                connecttrit.Text = "Listening";
+                isListening = true;
+            }
+            else
+            {
+                // 停止监听
+                listener.Stop();
+                listener = null;
+
+                connecttrit.Text = "StopListening";
+                isListening = false;
+            }
+        }
+        private void OnClientConnected(IAsyncResult ar)
+        {
+            // 客户端连接时的回调函数
+            TcpClient client = listener.EndAcceptTcpClient(ar);
+
+            // 处理客户端请求（示例中只是简单地回复消息）
+            string message = "收到消息！";
+            byte[] data = Encoding.UTF8.GetBytes(message);
+            client.GetStream().Write(data, 0, data.Length);
+            //client.Close();
+
+            // 继续异步接受下一个客户端连接
+            listener.BeginAcceptTcpClient(OnClientConnected, null);
         }
     }
 }

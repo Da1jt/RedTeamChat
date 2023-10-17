@@ -44,8 +44,8 @@ namespace chat
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.consolee = new Sunny.UI.UIRichTextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.intranetfind = new Sunny.UI.UIButton();
             this.refreshfilel = new Sunny.UI.UIButton();
-            this.log = new Sunny.UI.UIButton();
             this.discon = new Sunny.UI.UIButton();
             this.uiSmoothLabel9 = new Sunny.UI.UISmoothLabel();
             this.autodiscon = new Sunny.UI.UISwitch();
@@ -71,14 +71,14 @@ namespace chat
             this.inputbutton = new Sunny.UI.UITextBox();
             this.controlmenu1 = new Sunny.UI.UITabControlMenu();
             this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.uiDataGridView1 = new Sunny.UI.UIDataGridView();
+            this.Serverfilegrid = new Sunny.UI.UIDataGridView();
             this.tabPage4.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.controlmenu1.SuspendLayout();
             this.tabPage5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.uiDataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Serverfilegrid)).BeginInit();
             this.SuspendLayout();
             // 
             // Header
@@ -165,8 +165,8 @@ namespace chat
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
+            this.tabPage2.Controls.Add(this.intranetfind);
             this.tabPage2.Controls.Add(this.refreshfilel);
-            this.tabPage2.Controls.Add(this.log);
             this.tabPage2.Controls.Add(this.discon);
             this.tabPage2.Controls.Add(this.uiSmoothLabel9);
             this.tabPage2.Controls.Add(this.autodiscon);
@@ -190,11 +190,27 @@ namespace chat
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "setting";
             // 
+            // intranetfind
+            // 
+            this.intranetfind.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.intranetfind.Enabled = false;
+            this.intranetfind.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.intranetfind.Font = new System.Drawing.Font("等线", 11.8F, System.Drawing.FontStyle.Bold);
+            this.intranetfind.Location = new System.Drawing.Point(57, 209);
+            this.intranetfind.MinimumSize = new System.Drawing.Size(1, 1);
+            this.intranetfind.Name = "intranetfind";
+            this.intranetfind.Size = new System.Drawing.Size(178, 56);
+            this.intranetfind.Style = Sunny.UI.UIStyle.Custom;
+            this.intranetfind.TabIndex = 21;
+            this.intranetfind.Text = "IntranetServerFind";
+            this.intranetfind.TipsFont = new System.Drawing.Font("等线", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.intranetfind.Click += new System.EventHandler(this.intranetfind_Click);
+            // 
             // refreshfilel
             // 
             this.refreshfilel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.refreshfilel.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.refreshfilel.Location = new System.Drawing.Point(57, 369);
+            this.refreshfilel.Location = new System.Drawing.Point(57, 349);
             this.refreshfilel.MinimumSize = new System.Drawing.Size(1, 1);
             this.refreshfilel.Name = "refreshfilel";
             this.refreshfilel.Size = new System.Drawing.Size(178, 55);
@@ -203,20 +219,6 @@ namespace chat
             this.refreshfilel.Text = "refresh filelist";
             this.refreshfilel.TipsFont = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.refreshfilel.Click += new System.EventHandler(this.refreshfilel_Click);
-            // 
-            // log
-            // 
-            this.log.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.log.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.log.Location = new System.Drawing.Point(57, 293);
-            this.log.MinimumSize = new System.Drawing.Size(1, 1);
-            this.log.Name = "log";
-            this.log.Size = new System.Drawing.Size(178, 58);
-            this.log.Style = Sunny.UI.UIStyle.Custom;
-            this.log.TabIndex = 19;
-            this.log.Text = "Load chat history";
-            this.log.TipsFont = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.log.Click += new System.EventHandler(this.log_Click);
             // 
             // discon
             // 
@@ -260,7 +262,7 @@ namespace chat
             // 
             this.uiButton2.Cursor = System.Windows.Forms.Cursors.Hand;
             this.uiButton2.Font = new System.Drawing.Font("宋体", 14F);
-            this.uiButton2.Location = new System.Drawing.Point(57, 220);
+            this.uiButton2.Location = new System.Drawing.Point(57, 285);
             this.uiButton2.MinimumSize = new System.Drawing.Size(1, 1);
             this.uiButton2.Name = "uiButton2";
             this.uiButton2.Radius = 10;
@@ -332,7 +334,7 @@ namespace chat
             // uiSmoothLabel6
             // 
             this.uiSmoothLabel6.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiSmoothLabel6.Location = new System.Drawing.Point(27, 145);
+            this.uiSmoothLabel6.Location = new System.Drawing.Point(27, 132);
             this.uiSmoothLabel6.Name = "uiSmoothLabel6";
             this.uiSmoothLabel6.Size = new System.Drawing.Size(278, 52);
             this.uiSmoothLabel6.Style = Sunny.UI.UIStyle.Custom;
@@ -417,9 +419,9 @@ namespace chat
             // uiSmoothLabel1
             // 
             this.uiSmoothLabel1.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiSmoothLabel1.Location = new System.Drawing.Point(71, 27);
+            this.uiSmoothLabel1.Location = new System.Drawing.Point(86, 27);
             this.uiSmoothLabel1.Name = "uiSmoothLabel1";
-            this.uiSmoothLabel1.Size = new System.Drawing.Size(164, 38);
+            this.uiSmoothLabel1.Size = new System.Drawing.Size(149, 38);
             this.uiSmoothLabel1.Style = Sunny.UI.UIStyle.Custom;
             this.uiSmoothLabel1.TabIndex = 1;
             this.uiSmoothLabel1.Text = "set ur name here";
@@ -481,6 +483,7 @@ namespace chat
             this.uiFlowLayoutPanel1.MinimumSize = new System.Drawing.Size(1, 1);
             this.uiFlowLayoutPanel1.Name = "uiFlowLayoutPanel1";
             this.uiFlowLayoutPanel1.Padding = new System.Windows.Forms.Padding(10);
+            this.uiFlowLayoutPanel1.ScrollBarWidth = 30;
             this.uiFlowLayoutPanel1.ShowText = false;
             this.uiFlowLayoutPanel1.Size = new System.Drawing.Size(904, 381);
             this.uiFlowLayoutPanel1.Style = Sunny.UI.UIStyle.Custom;
@@ -562,19 +565,19 @@ namespace chat
             // tabPage5
             // 
             this.tabPage5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
-            this.tabPage5.Controls.Add(this.uiDataGridView1);
+            this.tabPage5.Controls.Add(this.Serverfilegrid);
             this.tabPage5.Location = new System.Drawing.Point(201, 0);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Size = new System.Drawing.Size(927, 534);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Server-File";
             // 
-            // uiDataGridView1
+            // Serverfilegrid
             // 
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(243)))), ((int)(((byte)(255)))));
-            this.uiDataGridView1.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            this.uiDataGridView1.BackgroundColor = System.Drawing.Color.White;
-            this.uiDataGridView1.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            this.Serverfilegrid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            this.Serverfilegrid.BackgroundColor = System.Drawing.Color.White;
+            this.Serverfilegrid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
             dataGridViewCellStyle2.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -582,8 +585,8 @@ namespace chat
             dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.uiDataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
-            this.uiDataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.Serverfilegrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            this.Serverfilegrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle3.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -591,12 +594,12 @@ namespace chat
             dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.uiDataGridView1.DefaultCellStyle = dataGridViewCellStyle3;
-            this.uiDataGridView1.EnableHeadersVisualStyles = false;
-            this.uiDataGridView1.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiDataGridView1.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
-            this.uiDataGridView1.Location = new System.Drawing.Point(3, 3);
-            this.uiDataGridView1.Name = "uiDataGridView1";
+            this.Serverfilegrid.DefaultCellStyle = dataGridViewCellStyle3;
+            this.Serverfilegrid.EnableHeadersVisualStyles = false;
+            this.Serverfilegrid.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Serverfilegrid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
+            this.Serverfilegrid.Location = new System.Drawing.Point(3, 3);
+            this.Serverfilegrid.Name = "Serverfilegrid";
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(243)))), ((int)(((byte)(255)))));
             dataGridViewCellStyle4.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -604,19 +607,19 @@ namespace chat
             dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
             dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.White;
             dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.uiDataGridView1.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
-            this.uiDataGridView1.RowHeadersWidth = 51;
+            this.Serverfilegrid.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            this.Serverfilegrid.RowHeadersWidth = 51;
             dataGridViewCellStyle5.BackColor = System.Drawing.Color.White;
             dataGridViewCellStyle5.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiDataGridView1.RowsDefaultCellStyle = dataGridViewCellStyle5;
-            this.uiDataGridView1.RowTemplate.Height = 27;
-            this.uiDataGridView1.ScrollBarRectColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
-            this.uiDataGridView1.SelectedIndex = -1;
-            this.uiDataGridView1.Size = new System.Drawing.Size(921, 528);
-            this.uiDataGridView1.StripeOddColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(243)))), ((int)(((byte)(255)))));
-            this.uiDataGridView1.Style = Sunny.UI.UIStyle.Custom;
-            this.uiDataGridView1.TabIndex = 1;
-            this.uiDataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.uiDataGridView1_CellContentClick);
+            this.Serverfilegrid.RowsDefaultCellStyle = dataGridViewCellStyle5;
+            this.Serverfilegrid.RowTemplate.Height = 27;
+            this.Serverfilegrid.ScrollBarRectColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
+            this.Serverfilegrid.SelectedIndex = -1;
+            this.Serverfilegrid.Size = new System.Drawing.Size(921, 528);
+            this.Serverfilegrid.StripeOddColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(243)))), ((int)(((byte)(255)))));
+            this.Serverfilegrid.Style = Sunny.UI.UIStyle.Custom;
+            this.Serverfilegrid.TabIndex = 1;
+            this.Serverfilegrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.uiDataGridView1_CellContentClick);
             // 
             // RedTeamChatf
             // 
@@ -644,7 +647,7 @@ namespace chat
             this.tabPage1.ResumeLayout(false);
             this.controlmenu1.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.uiDataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Serverfilegrid)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -680,11 +683,11 @@ namespace chat
         private Sunny.UI.UISwitch autodiscon;
         private Sunny.UI.UISmoothLabel uiSmoothLabel9;
         private Sunny.UI.UIButton discon;
-        private Sunny.UI.UIButton log;
         private System.Windows.Forms.TabPage tabPage5;
-        private Sunny.UI.UIDataGridView uiDataGridView1;
+        private Sunny.UI.UIDataGridView Serverfilegrid;
         private Sunny.UI.UIButton refreshfilel;
         private Sunny.UI.UIFlowLayoutPanel uiFlowLayoutPanel1;
         private Sunny.UI.UIAvatar Emoji;
+        private UIButton intranetfind;
     }
 }
