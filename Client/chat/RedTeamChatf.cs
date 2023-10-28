@@ -1,24 +1,20 @@
 ﻿using Sunny.UI;
 using System;
+using System.Data;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
-using System.Diagnostics;
-using System.Security.Cryptography;
-using System.Drawing;
-using System.Data;
-using System.IO;
-using System.Reflection;
 using static chat.emoji;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
-using Sunny.UI.Win32;
-using System.Xml.Linq;
-using System.Runtime.InteropServices;
-using System.Net.NetworkInformation;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace chat
 {
@@ -35,42 +31,57 @@ namespace chat
                 refreshfilel.Enabled = false;
                 this.Text = "RedTeamChat - Disconnected";
                 server.Text = "127.0.0.1";
+                Terminal.Text += $"->Ini Success\n->Use 'help' to get help\n[{DateTime.Now}] cmd> ";
                 this.Icon = Properties.Resources.chat;
+                priviousnumb = Terminal.Text.Length - 1;
+                AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
                 Serverfilegrid.Dock = DockStyle.Fill;
                 Serverfilegrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
                 Serverfilegrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
                 Serverfilegrid.AllowUserToAddRows = false;
                 Serverfilegrid.ReadOnly = true;
                 Serverfilegrid.AllowUserToDeleteRows = false;
+                atwho.DataGridView.Columns.Add("name", "name");
+
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "Err");
                 consolee.Text += "Initial Failed\n" + e.Message;
             }
-
             consolee.Text += "Initial Success\n";
 
         }
         [DllImport("user32.dll")]
         public static extern bool FlashWindow(IntPtr hwnd, bool bInvert);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
 
-        // 控制滚动条位置
-        private void SetScrollPosition(UIFlowLayoutPanel control)
+        [DllImport("user32.dll")]
+        private static extern int GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
+        static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
-            control.VerticalScroll.Value = control.VerticalScroll.Maximum;
-            control.PerformLayout();
+            AssemblyName assemblyName = new AssemblyName(args.Name);
 
-            if (control.Controls.Count > 0)
-                control.ScrollControlIntoView(control.Controls[control.Controls.Count - 1]);
+            string resourceName = "chat.Resources." + assemblyName.Name + ".dll";
+
+            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
+            {
+                if (stream != null)
+                {
+                    byte[] assemblyData = new byte[stream.Length];
+                    stream.Read(assemblyData, 0, assemblyData.Length);
+                    return Assembly.Load(assemblyData);
+                }
+
+                return null;
+            }
         }
 
-        bool contrigger = false, connectb = false, autodisconnect = false, IntranetSockStatus = false;
-        private Socket clientSocket;
-        public void send(string msge, string name, string time, string type)
+        bool _contrigger = false, _connectb = false, _intranetSockStatus = false;
+        private Socket _clientSocket;
+        public void Send(string msge, string name, string time, string type)
         {
 
             if (type == "common")
@@ -78,7 +89,7 @@ namespace chat
                 try
                 {
                     byte[] data = Encoding.UTF8.GetBytes(msge + "//" + name + "//" + time);
-                    clientSocket.Send(data);
+                    _clientSocket.Send(data);
                     inputbutton.Text = "";
                 }
                 catch (Exception e)
@@ -94,7 +105,7 @@ namespace chat
                 try
                 {
                     byte[] data = Encoding.UTF8.GetBytes("list");
-                    clientSocket.Send(data);
+                    _clientSocket.Send(data);
                 }
                 catch (Exception e)
                 {
@@ -111,8 +122,23 @@ namespace chat
                     string dataString = msge + "//" + name + "//" + time;
                     byte[] dataBytes = Encoding.UTF8.GetBytes(dataString);
                     string base64EncodedData = Base64Encode(Encoding.UTF8, dataBytes.ToString());
-                    clientSocket.Send(Encoding.UTF8.GetBytes(base64EncodedData));
+                    _clientSocket.Send(Encoding.UTF8.GetBytes(base64EncodedData));
                     inputbutton.Text = "";
+                }
+                catch (Exception e)
+                {
+                    consolee.Invoke(new Action(() =>
+                    {
+                        consolee.Text += "Exception: " + e.Message + "\n";
+                    }));
+                }
+            }
+            else if (type == "cmd")
+            {
+                try
+                {
+                    byte[] data = Encoding.UTF8.GetBytes("cmd%%" + msge + "//" + name + "//" + time);
+                    _clientSocket.Send(data);
                 }
                 catch (Exception e)
                 {
@@ -124,7 +150,7 @@ namespace chat
             }
         }
 
-        public int typedetect(string rcvdata)
+        public int Typedetect(string rcvdata)
         {
             if (rcvdata == "common") return 1;
             else if (rcvdata == "list") return 2;
@@ -132,6 +158,7 @@ namespace chat
             else if (rcvdata == "file") return 4;
             else if (rcvdata == "emsg") return 5;
             else if (rcvdata == "smsg") return 6;
+            else if (rcvdata == "cmdre") return 7;
             return 0;
         }
         public void ReceiveData(object clientSocket)
@@ -148,232 +175,16 @@ namespace chat
                     string receivedData = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                     string[] aft = receivedData.Split(new string[] { "%%" }, StringSplitOptions.None);
                     string pt1 = aft[0], pt2 = aft[1];
-                    int typedet = typedetect(pt1);
-                    if (typedet == 1)
-                    {
-                        string[] parts = pt2.Split(new string[] { "//" }, StringSplitOptions.None);
-                        string firstString, secondString, thirdString;
-                        if (parts.Length == 3)
-                        {
-                            firstString = parts[0];
-                            secondString = parts[1];
-                            thirdString = parts[2];
-                            if (nameset.Text != secondString)
-                            {
-                                tips();
-                            }
-
-                            if (firstString.StartsWith("[") && firstString.EndsWith("]"))
-                            {
-                                this.Invoke(new Action(() =>
-                                {
-                                    lableadd(" User:  " + secondString + " time:  " + thirdString, "text");
-                                    emojianalysis(firstString);
-                                }));
-                            }
-                            else if (firstString.EndsWith("@@@"))
-                            {
-                                this.Invoke(new Action(() =>
-                                {
-                                    lableadd(" User:  " + secondString + " time:  " + thirdString + "\n[" + firstString + "]", "sysinfo");
-                                }));
-                            }
-                            else
-                            {
-                                this.Invoke(new Action(() =>
-                                {
-                                    lableadd(" User:  " + secondString + " time:  " + thirdString + "\n", "text");
-                                    lableadd(firstString, "msgbox");
-                                }));
-                            }
-                        }
-                    }
-                    else if (typedet == 2)
-                    {
-                        tips();
-                        int Tagn = TagNumbGet(pt2, "//");
-                        string[] parts = pt2.Split(new string[] { "//" }, StringSplitOptions.None);
-                        this.Invoke(new Action(() =>
-                        {
-                            consolee.Text += "[----Online-UserList-Start---\n";
-                            for (int i = 0; i <= Tagn; i++)
-                            {
-
-                                consolee.Text += " " + parts[i] + "\n";
-
-                            }
-                            consolee.Text += "----Online-UserList-End---]\n";
-                        }));
-                    }
-                    else if (typedet == 3)
-                    {
-                        tips();
-                        try
-                        {
-                            int Tagn = TagNumbGet(pt2, "##");
-                            string[] parts = pt2.Split(new string[] { "##" }, StringSplitOptions.None);
-                            this.Invoke(new Action((() =>
-                            {
-                                lableadd("[-------Chat-history-begin-------", "text");
-                            })));
-
-                            for (int i = 0; i < Tagn; i++)
-                            {
-                                parts[i] = parts[i].Replace("%r%", "\r\n");
-                                string[] part = parts[i].Split(new string[] { "//" }, StringSplitOptions.None);
-                                string firstString, secondString, thirdString;
-
-                                if (part.Length == 3)
-                                {
-                                    firstString = part[0]; secondString = part[1]; thirdString = part[2];
-                                    if (firstString.StartsWith("[") && firstString.EndsWith("]"))
-                                    {
-                                        this.Invoke(new Action(() =>
-                                        {
-                                            lableadd(" User:  " + secondString + " time:  " + thirdString, "text");
-                                            emojianalysis(firstString);
-                                        }));
-                                    }
-                                    else if (firstString.EndsWith("@@@"))
-                                    {
-                                        this.Invoke(new Action(() =>
-                                        {
-                                            lableadd("\n" + " User:  " + secondString + " time:  " + thirdString + "\n[" + firstString + "]\n", "sysinfo");
-                                        }));
-                                    }
-                                    else
-                                    {
-                                        this.Invoke(new Action(() =>
-                                        {
-                                            lableadd(" User:  " + secondString + " time:  " + thirdString + "\n", "text");
-                                            lableadd(firstString, "msgbox");
-                                        }));
-                                    }
-                                }
-                            }
-                            this.Invoke(new Action((() =>
-                            {
-                                lableadd("-------Chat-history-end---------]", "text");
-                            })));
-                        }
-                        catch (Exception e)
-                        {
-                            this.Invoke(new Action(() =>
-                            {
-                                consolee.Text += e.Message;
-                            }));
-                            throw;
-                        }
-                    }
-                    else if (typedet == 4)
-                    {
-                        File_System(pt2);
-                    }
-                    else if (typedet == 5)
-                    {
-                        string decoded = Base64Decode(pt2);
-                        if (decoded.StartsWith(nameset.Text))
-                        {
-                            string fn = decoded;
-                            for (int i = nameset.Text.Length; i < decoded.Length; i++)
-                            {
-                                fn += decoded[i];
-                            }
-                            string[] partss = decoded.Split(new string[] { "//" }, StringSplitOptions.None);
-                            string firstString, secondString, thirdString;
-                            if (partss.Length == 3)
-                            {
-                                firstString = partss[0];
-                                secondString = partss[1];
-                                thirdString = partss[2];
-                                if (nameset.Text != secondString)
-                                {
-                                    tips();
-                                }
-
-                                if (firstString.StartsWith("[") && firstString.EndsWith("]"))
-                                {
-                                    this.Invoke(new Action(() =>
-                                    {
-                                        lableadd(" User:  " + secondString + " time:  " + thirdString, "text");
-                                        emojianalysis(firstString);
-                                    }));
-                                }
-                                else if (firstString.EndsWith("@@@"))
-                                {
-                                    this.Invoke(new Action(() =>
-                                    {
-                                        lableadd(" User:  " + secondString + " time:  " + thirdString + "\n" + firstString, "sysinfo");
-                                    }));
-                                }
-                                else
-                                {
-                                    this.Invoke(new Action(() =>
-                                    {
-                                        lableadd(" User:  " + secondString + " time:  " + thirdString + "\n", "text");
-                                        lableadd(firstString, "msgbox");
-                                    }));
-                                }
-                            }
-                        }
-                    }
-                    else if (typedet == 6)
-                    {
-                        if (pt2.StartsWith(nameset.Text))
-                        {
-                            string[] parts = pt2.Split(new string[] { "//" }, StringSplitOptions.None);
-                            string firstString, secondString, thirdString, fourthString;
-                            if (parts.Length == 4)
-                            {
-                                firstString = parts[1];
-                                secondString = parts[2];
-                                thirdString = parts[3];
-                                if (nameset.Text != secondString)
-                                {
-                                    tips();
-                                }
-
-                                if (firstString.StartsWith("[") && firstString.EndsWith("]"))
-                                {
-                                    this.Invoke(new Action(() =>
-                                    {
-                                        lableadd(" User:  " + secondString + " time:  " + thirdString, "text");
-                                        emojianalysis(firstString);
-                                    }));
-                                }
-                                else if (firstString.EndsWith("@@@"))
-                                {
-                                    this.Invoke(new Action(() =>
-                                    {
-                                        lableadd(" User:  " + secondString + " time:  " + thirdString + "\n" + firstString, "sysinfo");
-                                    }));
-                                }
-                                else
-                                {
-                                    this.Invoke(new Action(() =>
-                                    {
-                                        lableadd(" User:  " + secondString + " time:  " + thirdString + "\n", "text");
-                                        lableadd(firstString, "msgbox");
-                                    }));
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        this.Invoke(new Action(() =>
-                        {
-                            consolee.Text += "Received unknown data-type from " + server.Text + ":" + port.Value + "\n";
-                        }));
-                    }
+                    int typedet = Typedetect(pt1);
+                    reception_analysis(pt2, typedet);
                 }
             }
             catch (Exception e)
             {
                 if (e.Message == "远程主机强迫关闭了一个现有的连接。")
                 {
-                    lableadd("服务器断开连接", "sysinfo");
-                    disconnectgo();
+                    Lableadd("服务器断开连接", "sysinfo");
+                    Disconnectgo();
                 }
                 consolee.Invoke(new Action(() =>
                 {
@@ -382,20 +193,6 @@ namespace chat
             }
         }
 
-        private void uiTextBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tabPage1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void uiTextBox1_TextChanged_1(object sender, EventArgs e)
-        {
-
-        }
         public int TagNumbGet(string originstring, string tag)
         {
             MatchCollection matches = Regex.Matches(originstring, tag);
@@ -438,17 +235,18 @@ namespace chat
                 {
                     MessageBox.Show("name cannot be blank");
                 }
-                else if (valider(inputbutton.Text, ""))
+                else if (Valider(inputbutton.Text, ""))
                 {
                 }
-                else if (contrigger == true)
+                else if (_contrigger)
                 {
-                    send(inputbutton.Text, nameset.Text, currentTime.ToString(), "common");
+                    Send(inputbutton.Text, nameset.Text, currentTime.ToString(), "common");
                 }
 
             }
-            else if (valider(inputbutton.Text, ""))
+            else if (Valider(inputbutton.Text, ""))
             {
+
             }
             else
             {
@@ -456,51 +254,17 @@ namespace chat
                 {
                     MessageBox.Show("name cannot be blank");
                 }
-                else if (valider(nameset.Text, "name"))
+                else if (Valider(nameset.Text, "name"))
                 {
                 }
                 else
                 {
-                    send(inputbutton.Text, nameset.Text, currentTime.ToString(), "common");
+                    Send(inputbutton.Text, nameset.Text, currentTime.ToString(), "common");
                 }
             }
         }
-        private void inputbutton_TextChanged(object sender, EventArgs e)
-        {
 
-        }
-
-        private void uiSmoothLabel1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void uiTextBox1_TextChanged_2(object sender, EventArgs e)
-        {
-
-        }
-
-        private void consolee_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void server_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void uiSmoothLabel3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void uiSmoothLabel5_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private bool valider(string i, string t)
+        private bool Valider(string i, string t)
         {
             if (TagDetect(i) == 0)
             {
@@ -522,7 +286,7 @@ namespace chat
                 MessageBox.Show("@@@ is not allowed in " + t);
                 return true;
             }
-            else if (!contrigger)
+            else if (!_contrigger)
             {
                 MessageBox.Show("U need to connect to the server before sending");
                 return true;
@@ -537,12 +301,11 @@ namespace chat
         public void con_Click(object sender, EventArgs e)
         {
 
-            if (connectb/* && autodisconnect*/)
+            if (_connectb/* && autodisconnect*/)
             {
                 try
                 {
-                    clientSocket.Shutdown(SocketShutdown.Both);
-                    contrigger = false;
+                    _clientSocket.Shutdown(SocketShutdown.Both);
                     nameset.Enabled = true;
                     con.Enabled = true;
                     connecttrit.Text = "Disconnected";
@@ -556,13 +319,13 @@ namespace chat
                     throw;
                 }
             }
-            clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            contrigger = false;
+            _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            _contrigger = false;
             if (nameset.Text == "")
             {
                 MessageBox.Show("empty is not allowed");
             }
-            else if (con.Enabled == false)
+            else if (!con.Enabled)
             {
                 MessageBox.Show("U need to disconnect before connect to other server");
             }
@@ -570,8 +333,8 @@ namespace chat
             {
                 try
                 {
-                    IPAddress serverIP;
-                    if (!IPAddress.TryParse(server.Text, out serverIP))
+                    IPAddress serverIp;
+                    if (!IPAddress.TryParse(server.Text, out serverIp))
                     {
                         IPAddress[] ipAddresses = Dns.GetHostAddresses(server.Text);
                         if (ipAddresses.Length != 1)
@@ -593,56 +356,55 @@ namespace chat
                             MessageBox.Show(finout, "Error");
                             return;
                         }
-                        serverIP = ipAddresses[0];
+                        serverIp = ipAddresses[0];
                     }
 
                     int serverPort = (int)port.Value;
 
-                    IPEndPoint serverEP = new IPEndPoint(serverIP, serverPort);
-                    clientSocket.Connect(serverEP);
-                    consolee.Text += "\n------------\n" + "Connected to the server " + serverIP + " port " + serverPort + "\n------------\n";
-                    tips();
+                    IPEndPoint serverEp = new IPEndPoint(serverIp, serverPort);
+                    _clientSocket.Connect(serverEp);
+                    consolee.Text += "------------\n" + "Connected to the server " + serverIp + " port " + serverPort + "\n------------\n";
+                    Tips();
                     Thread receiveThread = new Thread(ReceiveData);
-                    receiveThread.Start(clientSocket);
-                    contrigger = true;
-                    this.Text = "RedTeamChat - " + nameset.Text + " - " + serverIP + ":" + serverPort;
+                    receiveThread.Start(_clientSocket);
+                    _contrigger = true;
+                    this.Text = "RedTeamChat - " + nameset.Text + " - " + serverIp + ":" + serverPort;
                     connecttrit.Text = "Connected";
                     nameset.Enabled = false;
                     con.Enabled = false;
                     discon.Show();
-                    send("@@@Joined the server@@@", nameset.Text, DateTime.Now.ToString(), "common");
+                    Send("@@@Joined the server@@@", nameset.Text, DateTime.Now.ToString(), "common");
+                    Lableadd("Self-Connected", "sysinfo");
+
                 }
                 catch (Exception ex)
                 {
                     this.Invoke(new Action(() =>
                     {
                         consolee.Text += "Exception: " + ex.Message + "\n";
+                        MessageBox.Show(ex.Message, "Err");
                     }
                     ));
-                    throw;
-
                 }
             }
-        }
-
-        private void connecttrit_TextChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void uiButton2_Click(object sender, EventArgs e)
         {
             try
             {
-                if (contrigger)
+                if (_contrigger)
                 {
-                    send("none", "none", "none", "list");
+                    Send("none", "none", "none", "list");
                     consolee.Text += "Request -Get Userlist- sended\n";
+
                 }
                 else
                 {
                     consolee.Text += "U need to connect before Getting Userlist\n";
                 }
+
+                controlmenu1.SelectedTab = console;
             }
             catch (Exception exception)
             {
@@ -651,44 +413,194 @@ namespace chat
             }
         }
 
-        private void uiSmoothLabel7_Click(object sender, EventArgs e)
+        private void reception_analysis(string receptioninfo, int typedet)
         {
-
-        }
-
-        private void uiSwitch1_ValueChanged(object sender, bool value)
-        {
-            if (autodiscon.Active == true)
+            if (typedet == 1)
             {
-                autodisconnect = true;
+                ana_common(receptioninfo);
+            }
+            else if (typedet == 2)
+            {
+                Tips();
+                int tagn = TagNumbGet(receptioninfo, "//");
+                string[] parts = receptioninfo.Split(new string[] { "//" }, StringSplitOptions.None);
+                this.Invoke(new Action(() =>
+                {
+                    ATwho("clear", "");
+                    consolee.Text += "[----Online-UserList-Start---\n";
+                    for (int i = 0; i <= tagn; i++)
+                    {
+                        consolee.Text += " " + parts[i] + "\n";
+                        ATwho("add", parts[i]);
+                        MessageBox.Show(parts[i]);
+                    }
+                    consolee.Text += "----Online-UserList-End---]\n";
+                }));
+            }
+            else if (typedet == 3)
+            {
+                Tips();
+                try
+                {
+                    int tagn = TagNumbGet(receptioninfo, "##");
+                    string[] parts = receptioninfo.Split(new string[] { "##" }, StringSplitOptions.None);
+                    this.Invoke(new Action((() =>
+                    {
+                        Lableadd("[-------Chat-history-begin-------", "text");
+                    })));
+
+                    for (int i = 0; i < tagn; i++)
+                    {
+                        parts[i] = parts[i].Replace("%r%", "\r\n");
+                        ana_common(parts[i]);
+                        Thread.Sleep(100);
+
+                    }
+                    this.Invoke(new Action((() =>
+                    {
+                        Lableadd("-------Chat-history-end---------]", "text");
+                    })));
+                }
+                catch (Exception e)
+                {
+                    this.Invoke(new Action(() =>
+                    {
+                        consolee.Text += e.Message;
+                    }));
+                    throw;
+                }
+            }
+            else if (typedet == 4)
+            {
+                File_System(receptioninfo);
+            }
+            else if (typedet == 5)
+            {
+                string decoded = Base64Decode(receptioninfo);
+                if (decoded.StartsWith(nameset.Text))
+                {
+                    ana_common(decoded);
+                }
+            }
+            else if (typedet == 6)
+            {
+                if (receptioninfo.StartsWith(nameset.Text))
+                {
+                    ana_common(receptioninfo);
+                }
+            }
+            else if (typedet == 7)
+            {
+
             }
             else
             {
-                autodisconnect = false;
+                this.Invoke(new Action(() =>
+                {
+                    consolee.Text += "Received unknown data-type from " + server.Text + ":" + port.Value + "\n";
+                }));
             }
         }
 
+        private void ana_common(string raw)
+        {
+            string[] parts = raw.Split(new string[] { "//" }, StringSplitOptions.None);
+            string firstString, secondString, thirdString;
+            if (parts.Length == 3)
+            {
+                firstString = parts[0];
+                secondString = parts[1];
+                thirdString = parts[2];
+                if (nameset.Text != secondString)
+                {
+                    Tips();
+                }
+                this.Invoke(new Action((() =>
+                {
+                    if (firstString.StartsWith("[") && firstString.EndsWith("]"))
+                    {
+                        if (secondString == nameset.Text)
+                        {
+                            lock (lockObject)
+                            {
+                                Lableadd(" User:  " + secondString + "(me) time:  " + thirdString, "text");
+                            }
+                        }
+                        else
+                        {
+                            lock (lockObject)
+                            {
+                                Lableadd(" User:  " + secondString + " time:  " + thirdString, "text");
+                            }
+                        }
+                        lock (lockObject)
+                        {
+                            Emojianalysis(firstString);
+                        }
+                    }
+                    else if (firstString.EndsWith("@@@"))
+                    {
+                        if (secondString == nameset.Text)
+                        {
+                            lock (lockObject)
+                            {
+                                Lableadd(" User:  " + secondString + "(me) time:  " + thirdString + "\n[" + firstString + "]", "sysinfo");
+                            }
+                        }
+                        else
+                        {
+                            lock (lockObject)
+                            {
+                                Lableadd(" User:  " + secondString + " time:  " + thirdString + "\n[" + firstString + "]", "sysinfo");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (secondString == nameset.Text)
+                        {
+                            lock (lockObject)
+                            {
+                                Lableadd(" User:  " + secondString + "(me) time:  " + thirdString + "\n", "text");
+                                Lableadd(firstString, "msgbox");
+                            }
+                        }
+                        else
+                        {
+                            lock (lockObject)
+                            {
+                                Lableadd(" User:  " + secondString + " time:  " + thirdString + "\n", "text");
+                                Lableadd(firstString, "msgbox");
+                            }
+
+                        }
+                    }
+                    Thread.Sleep(100);
+                })));
+            }
+        }
         private void discon_Click(object sender, EventArgs e)
         {
-            disconnectgo();
+            Disconnectgo();
         }
 
-        private void disconnectgo()
+        private void Disconnectgo()
         {
-            if (contrigger)
+            if (_contrigger)
             {
                 try
                 {
                     this.Invoke(new Action((() =>
                     {
                         DateTime currentTime = DateTime.Now;
-                        send("@@@Exit the server@@@", nameset.Text, currentTime.ToString(), "common");
-                        clientSocket.Shutdown(SocketShutdown.Both);
+                        Send("@@@Exit the server@@@", nameset.Text, currentTime.ToString(), "common");
+                        _clientSocket.Shutdown(SocketShutdown.Both);
                         connecttrit.Text = "Disconnected";
                         nameset.Enabled = true;
+                        _contrigger = false;
                         consolee.Text += "Disconnected\n";
                         this.Text = "RedTeamChat - Disconnected";
-                        lableadd("Self-[Disconnected]", "sysinfo");
+                        Lableadd("Self-[Disconnected]", "sysinfo");
                         discon.Hide();
                         con.Enabled = true;
                     })));
@@ -704,13 +616,13 @@ namespace chat
             }
         }
 
-        private void log_Click(object sender, EventArgs e)
+        /*private void log_Click(object sender, EventArgs e)
         {
             try
             {
-                if (contrigger)
+                if (_contrigger)
                 {
-                    send("none", "none", "none", "log");
+                    Send("none", "none", "none", "log");
                     this.Invoke(new Action((() =>
                     {
                         consolee.Text += "Request -Get history- sended\n";
@@ -732,23 +644,14 @@ namespace chat
                 })));
                 throw;
             }
-        }
+        }*/
         private void Form1_Load(object sender, EventArgs e)
         {
 
         }
 
-        private void uiScrollingText1_Click(object sender, EventArgs e)
-        {
 
-        }
-
-        private void uiWaitingBar1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        public void tips()
+        public void Tips()
         {
             this.Invoke(new Action((() =>
             {
@@ -757,12 +660,7 @@ namespace chat
             })));
         }
 
-        private void uiDataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private int filedef(string rd)
+        private int Filedef(string rd)
         {
             if (rd.StartsWith("FileDisplay")) return 1;
             else if (rd.StartsWith("FileInfo")) return 2;
@@ -770,16 +668,16 @@ namespace chat
         }
         private void File_System(string rawdata)
         {
-            int rete = filedef(rawdata);
+            int rete = Filedef(rawdata);
             if (rete == 1)
             {
                 string raw2 = string.Empty;
                 raw2 = rawdata.Substring(11);
                 try
                 {
-                    int Tagn = TagNumbGet(rawdata, "//");
+                    int tagn = TagNumbGet(rawdata, "//");
                     string[] parts = rawdata.Split(new string[] { "//" }, StringSplitOptions.None);
-                    for (int i = 0; i < Tagn; i++)
+                    for (int i = 0; i < tagn; i++)
                     {
 
                     }
@@ -797,11 +695,9 @@ namespace chat
             {
 
             }
-
         }
         private void refreshfilel_Click(object sender, EventArgs e)
         {
-
             DataTable dataTable = new DataTable();
             dataTable.Columns.Add("文件名");
             dataTable.Columns.Add("大小");
@@ -846,7 +742,6 @@ namespace chat
             Serverfilegrid.DataSource = dataTable;
         }
 
-
         private void RemoveFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // 获取当前选中的行
@@ -863,19 +758,14 @@ namespace chat
             }
         }
 
-        private void uiFlowLayoutPanel1_Click(object sender, EventArgs e)
-        {
-
-        }
-        private UIComboBox uiComboBox;
-        private bool emojiselected = false;
+        private bool _emojiselected = false;
         private void Emoji_Click(object sender, EventArgs e)
         {
-            if (contrigger)
+            if (_contrigger)
             {
                 emoji emojiForm = new emoji();
                 emojiForm.ShowDialog();
-                emojisend(GlobalData.emojiset);
+                Emojisend(GlobalData.emojiset);
 
             }
             else
@@ -883,12 +773,12 @@ namespace chat
                 MessageBox.Show("Please connect first", "Not allowed");
             }
         }
-        public void emojisend(string data)
+        public void Emojisend(string data)
         {
             DateTime currentTime = DateTime.Now;
             if (emoji.GlobalData.emojiset != "none")
             {
-                send("[" + emoji.GlobalData.emojiset + "]", nameset.Text, currentTime.ToString(), "common");
+                Send("[" + emoji.GlobalData.emojiset + "]", nameset.Text, currentTime.ToString(), "common");
             }
 
         }
@@ -911,115 +801,118 @@ namespace chat
                     }
                     else
                     {
-                        send(inpfilename.GlobalVariables.Filenamechange, nameset.Text, "", "file");
+                        Send(inpfilename.GlobalVariables.Filenamechange, nameset.Text, "", "file");
                     }
                 }
             }
         }
 
-        private void lableadd(string inp, string type)
+        private readonly object lockObject = new object();
+
+        private void Lableadd(string inp, string type)
         {
-            if (type == "text")
+            lock (lockObject)
             {
-                this.Invoke(new Action((() =>
+                if (type == "text")
                 {
-                    Label label = new Label();
-                    label.Text = inp;
-                    label.AutoSize = true;
-                    label.ForeColor = Color.Teal;
-                    uiFlowLayoutPanel1.Controls.Add(label);
-                    uiFlowLayoutPanel1.ScrollControlIntoView(label);
-                })));
-            }
-            else if (type == "msgbox")
-            {
-                UIRichTextBox richTextBox = new UIRichTextBox();
-                richTextBox.Text = inp;
-                richTextBox.ReadOnly = true;
-                richTextBox.Radius = 11;
-                richTextBox.FillColor = Color.SkyBlue;
-                richTextBox.AutoWordSelection = true;
-                /*richTextBox.MouseEnter += uiFlowLayoutPanel1Control_enter;
-                richTextBox.MouseLeave += uiFlowLayoutPanel1Control_leave;*/
-                richTextBox.RadiusSides = ((Sunny.UI.UICornerRadiusSides)((Sunny.UI.UICornerRadiusSides.RightTop | Sunny.UI.UICornerRadiusSides.RightBottom)));
-                richTextBox.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-                AdjustRichTextBoxSize(richTextBox);
-                uiFlowLayoutPanel1.Controls.Add(richTextBox);
-            }
-            else if (type == "img")
-            {
-                this.Invoke(new Action((() =>
+                    this.Invoke(new Action((() =>
+                    {
+                        Label label = new Label();
+                        label.Text = inp;
+                        label.AutoSize = true;
+                        label.ForeColor = Color.Teal;
+                        uiFlowLayoutPanel1.Controls.Add(label);
+                        uiFlowLayoutPanel1.ScrollControlIntoView(label);
+                    })));
+                }
+                else if (type == "msgbox")
                 {
-                    try
+                    UIRichTextBox richTextBox = new UIRichTextBox();
+                    richTextBox.Text = inp;
+                    richTextBox.ReadOnly = true;
+                    richTextBox.Radius = 11;
+                    richTextBox.FillColor = Color.SkyBlue;
+                    richTextBox.AutoWordSelection = true;
+                    /*richTextBox.MouseEnter += uiFlowLayoutPanel1Control_enter;
+                    richTextBox.MouseLeave += uiFlowLayoutPanel1Control_leave;*/
+                    richTextBox.RadiusSides = ((Sunny.UI.UICornerRadiusSides)((Sunny.UI.UICornerRadiusSides.RightTop | Sunny.UI.UICornerRadiusSides.RightBottom)));
+                    richTextBox.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+                    AdjustRichTextBoxSize(richTextBox);
+                    uiFlowLayoutPanel1.Controls.Add(richTextBox);
+                }
+                else if (type == "img")
+                {
+                    this.Invoke(new Action((() =>
+                    {
+                        try
+                        {
+                            PictureBox pictureBox = new PictureBox();
+                            pictureBox.Size = new Size(200, 200);
+                            pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+                            /*File.Create("C:\\Users\\"+Environment.UserName+"\\RedTeamTemp\\temp");
+                            File.Delete("C:\\Users\\" + Environment.UserName + "\\RedTeamTemp\\temp");*/
+                            Image image = Image.FromFile("C:\\Users\\" + Environment.UserName + "\\RedTeamTemp\\" + inp);
+                            pictureBox.Image = image;
+                            uiFlowLayoutPanel1.Controls.Add(pictureBox);
+                            uiFlowLayoutPanel1.ScrollControlIntoView(pictureBox);
+
+                        }
+                        catch (Exception e)
+                        {
+                            MessageBox.Show(e.Message, "Err");
+                            //throw;
+                        }
+                    })));
+                }
+                else if (type == "emoji")
+                {
+                    this.Invoke(new Action(() =>
                     {
                         PictureBox pictureBox = new PictureBox();
-                        pictureBox.Size = new Size(200, 200);
+                        pictureBox.Size = new Size(80, 80);
                         pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-                        /*File.Create("C:\\Users\\"+Environment.UserName+"\\RedTeamTemp\\temp");
-                        File.Delete("C:\\Users\\" + Environment.UserName + "\\RedTeamTemp\\temp");*/
-                        Image image = Image.FromFile("C:\\Users\\" + Environment.UserName + "\\RedTeamTemp\\" + inp);
-                        pictureBox.Image = image;
+                        System.Reflection.Assembly assembly = GetType().Assembly;
+                        Stream emg = assembly.GetManifestResourceStream("chat.Resources." + inp + ".png");
+                        pictureBox.Image = Image.FromStream(emg);
                         uiFlowLayoutPanel1.Controls.Add(pictureBox);
-                        uiFlowLayoutPanel1.ScrollControlIntoView(pictureBox);
-
-                    }
-                    catch (Exception e)
+                    }));
+                }
+                else if (type == "sysinfo")
+                {
+                    this.Invoke(new Action((() =>
                     {
-                        MessageBox.Show(e.Message, "Err");
-                        //throw;
-                    }
-                })));
-            }
-            else if (type == "emoji")
-            {
-                this.Invoke(new Action(() =>
-                {
-                    PictureBox pictureBox = new PictureBox();
-                    pictureBox.Size = new Size(80, 80);
-                    pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-                    System.Reflection.Assembly assembly = GetType().Assembly;
-                    Stream emg = assembly.GetManifestResourceStream("chat.Resources." + inp + ".png");
-                    pictureBox.Image = Image.FromStream(emg);
-                    uiFlowLayoutPanel1.Controls.Add(pictureBox);
-                }));
-            }
-            else if (type == "sysinfo")
-            {
-                this.Invoke(new Action((() =>
-                {
-                    Label label = new Label();
-                    label.Text = inp;
-                    label.AutoSize = true;
-                    label.ForeColor = Color.Gray;
-                    uiFlowLayoutPanel1.Controls.Add(label);
-                    uiFlowLayoutPanel1.ScrollControlIntoView(label);
-                    SetScrollPosition(uiFlowLayoutPanel1);
-                })));
+                        Label label = new Label();
+                        label.Text = inp;
+                        label.AutoSize = true;
+                        label.ForeColor = Color.Gray;
+                        uiFlowLayoutPanel1.Controls.Add(label);
+                        uiFlowLayoutPanel1.ScrollControlIntoView(label);
+                    })));
+                }
             }
         }
-
-        public void emojianalysis(string emojiname)
+        public void Emojianalysis(string emojiname)
         {
             if (emojiname == "[Doge]")
             {
-                lableadd("Doge", "emoji");
+                Lableadd("Doge", "emoji");
             }
             else if (emojiname == "[E]")
             {
-                lableadd("E", "emoji");
+                Lableadd("E", "emoji");
             }
             else
             {
-                lableadd(emojiname, "text");
+                Lableadd(emojiname, "text");
             }
         }
         private void RedTeamChat_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
         {
             DateTime currentTime = DateTime.Now;
-            if (contrigger)
+            if (_contrigger)
             {
-                send("@@@Exit the server@@@", nameset.Text, currentTime.ToString(), "common");
-                clientSocket.Shutdown(SocketShutdown.Both);
+                Send("@@@Exit the server@@@", nameset.Text, currentTime.ToString(), "common");
+                _clientSocket.Shutdown(SocketShutdown.Both);
             }
             ProcessStartInfo psi = new ProcessStartInfo
             {
@@ -1077,28 +970,20 @@ namespace chat
             }
             return decode;
         }
-        private void uiFlowLayoutPanel1Control_MouseWheel(object sender, MouseEventArgs e)
-        {
-            int scrollLines = SystemInformation.MouseWheelScrollLines;
-            int scrollAmount = e.Delta * scrollLines / 120;
-
-            uiFlowLayoutPanel1.VerticalScroll.Value -= scrollAmount;
-        }
-        private TcpListener listener;
-        private bool isListening = false;
-        private Thread intranetThread;
+        private TcpListener _listener;
+        private bool _isListening = false;
 
         private void intranetfind_Click(object sender, EventArgs e)
         {
-            if (isListening)
+            if (_isListening)
             {
-                isListening = false;
+                _isListening = false;
             }
             else
             {
-                isListening = true;
+                _isListening = true;
             }
-            interanet();
+            Interanet();
         }
 
         /*private void intranetfind_Click(object sender, EventArgs e)
@@ -1116,7 +1001,7 @@ namespace chat
 
 }*/
 
-        private void fadetext(string text)
+        private void Fadetext(string text)
         {
             UISmoothLabel smoothLabel = new UISmoothLabel();
             smoothLabel.Text = text;
@@ -1136,45 +1021,363 @@ namespace chat
             }
         }
 
-
-        private void interanet()
+        private bool wfcmd = false;
+        private int hisnmb = 0, hisselect = 0, priviousnumb;
+        private string RCEKey = String.Empty, pline = String.Empty;
+        private string[] cmdhiStrings = new string[1337];
+        private string _terminalipset = "127.0.0.1", _terminalportset = "8084";
+        private async void richTextBox1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (isListening)
+            if (!Terminal.Text.EndsWith(" "))
             {
-                // 开始监听
-                int port = 1234; // 将端口号替换为你希望监听的实际端口
-                listener = new TcpListener(IPAddress.Any, port);
-                listener.Start();
+                Terminal.Text += " ";
+            }
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;
+                Terminal.ReadOnly = true;
+                try
+                {
+                    int currentLineIndex = Terminal.GetLineFromCharIndex(Terminal.SelectionStart);
+                    string previousLine = Terminal.Lines[currentLineIndex];
+                    previousLine = previousLine.Substring(26, previousLine.Length - 27);
+                    cmdhiStrings[hisnmb] = previousLine; hisnmb++;
+                    hisselect = hisnmb;
 
-                // 启动异步接受客户端连接的操作
-                listener.BeginAcceptTcpClient(OnClientConnected, null);
+                    Terminal.Text += "\n";
+                    if (previousLine == "help")
+                    {
+                        Terminal.Text += "rkey [your rcekey]    Set the RCEKey\nrmkey              Remove the RCEKey\ncls                 Clear The Screen\nti [ip]   Set Target Terminal Ip(Default Localhost)\ntp [post]   Set Target Terminal Port(Default 8084)\ncc           Remove Connect Setting\ncfg         Show Connect Setting\n";
+                    }
+                    else if (previousLine.StartsWith("rkey "))
+                    {
+                        if (RCEKey == String.Empty)
+                        {
+                            RCEKey = previousLine.Substring(5);
+                            Terminal.Text += "->RCEKey Seted\n";
+                        }
+                        else
+                        {
+                            Terminal.Text += "->RCEKey Already Set\n";
+                        }
+                    }
+                    else if (previousLine == "rmkey")
+                    {
+                        if (RCEKey == String.Empty)
+                        {
+                            Terminal.Text += "->RCEKey Was Empty\n";
+                        }
+                        else
+                        {
+                            RCEKey = String.Empty;
+                            Terminal.Text += "->RCEKey Removed\n";
+                        }
+                    }
+                    else if (previousLine == "cls")
+                    {
+                        Terminal.Text = "->Ini Success\n";
+                    }
+                    else if (previousLine.StartsWith("ti "))
+                    {
+                        if (IPAddress.TryParse(previousLine.Substring(3), out IPAddress ip))
+                        {
+                            _terminalipset = previousLine.Substring(3);
+                            Terminal.Text += $"->Terminal Terget Set:{_terminalipset}:{_terminalportset}\n";
+                        }
+                        else
+                        {
+                            Terminal.Text += $"->Invalid IP\nTerminal Terget:{_terminalipset}:{_terminalportset}\n";
+                        }
+
+                    }
+                    else if (previousLine.StartsWith("tp "))
+                    {
+                        if (previousLine.Substring(3).ToInt() >= 0 && previousLine.ToInt() <= 65535)
+                        {
+                            _terminalportset = previousLine.Substring(3);
+                            Terminal.Text += $"->Terminal Terget Set:{_terminalipset}:{_terminalportset}\n";
+                        }
+                        else
+                        {
+                            Terminal.Text += $"->Invalid Port\nTerminal Terget:{_terminalipset}:{_terminalportset}\n";
+                        }
+
+                    }
+                    else if (previousLine == "cc")
+                    {
+                        _terminalipset = "127.0.0.1";
+                        _terminalportset = "8084";
+                        Terminal.Text += "->Terminal Setting Clear\n";
+                    }
+                    else if (previousLine == "cfg")
+                    {
+                        Terminal.Text += $"->Terminal Target {_terminalipset}:{_terminalportset}\n";
+                    }
+                    else
+                    {
+                        if (previousLine != String.Empty && previousLine != "cmd")
+                        {
+                            if (/*!string.IsNullOrEmpty(RCEKey)&&*/_terminalipset != "")
+                            {
+                                /*if (RCEKey!=String.Empty)
+                                {*/
+                                DateTime currentTime = DateTime.Now;
+                                string url = $"http://{_terminalipset}:{_terminalportset}/?command={previousLine}";
+                                Uri requestUri = new Uri(url);
+
+                                HttpClientHandler handler = new HttpClientHandler();
+                                using (HttpClient client = new HttpClient(handler))
+                                {
+                                    try
+                                    {
+                                        HttpResponseMessage response = await client.GetAsync(requestUri);
+                                        response.EnsureSuccessStatusCode();
+                                        string responseBody = await response.Content.ReadAsStringAsync();
+                                        if (responseBody == string.Empty)
+                                        {
+                                            responseBody = $"'{previousLine}' 不是内部或外部命令，也不是可运行的程序";
+                                        }
+                                        Terminal.Text += "\n->" + responseBody;
+                                        Terminal.Text += $"\n[{DateTime.Now}] cmd> ";
+                                        Terminal.SelectionStart = Terminal.Text.Length;
+                                        Terminal.SelectionLength = 0;
+                                        wfcmd = true;
+                                        this.Invoke(new Action((() =>
+                                        {
+                                            Terminal.Focus();
+                                            SendKeys.Send("{TAB}");
+                                        })));
+                                    }
+                                    catch (HttpRequestException ex)
+                                    {
+                                        consolee.Text += ($"请求失败: {ex.Message}\n");
+                                        Terminal.Text += "\n->Access Deniel";
+                                        Terminal.Text += $"\n[{DateTime.Now}] cmd> ";
+                                        Terminal.SelectionStart = Terminal.Text.Length;
+                                        Terminal.SelectionLength = 0;
+                                        wfcmd = true;
+                                        this.Invoke(new Action((() =>
+                                        {
+                                            IntPtr foregroundWindowHandle = GetForegroundWindow();
+                                            GetWindowThreadProcessId(foregroundWindowHandle, out int foregroundProcessId);
+
+                                            // 获取当前程序的进程ID
+                                            int currentProcessId = Process.GetCurrentProcess().Id;
+
+                                            if (foregroundProcessId==currentProcessId)
+                                            {
+                                                Terminal.Focus();
+                                                SendKeys.Send("{TAB}");
+                                            }
+                                            else
+                                            {
+                                                controlmenu1.Focus();
+                                            }
+                                            
+
+
+                                        })));
+                                    }
+                                }
+                                //Send(previousLine, RCEKey, currentTime.ToString(), "cmd");
+                                /*}
+                                else
+                                {
+                                    Terminal.Text += "RCEKey Was Empty\n";
+                                }*/
+                            }
+                            else
+                            {
+                                Terminal.Text += "IP Was Empty\n";
+                            }
+                        }
+                    }
+                    if (!wfcmd)
+                    {
+                        Terminal.Text += $"[{DateTime.Now}] cmd> ";
+                        Terminal.SelectionStart = Terminal.Text.Length;
+                        Terminal.SelectionLength = 0;
+                        this.Invoke(new Action((() =>
+                        {
+                            SendKeys.Send("{TAB}");
+                        })));
+                    }
+                    wfcmd = false;
+                    priviousnumb = Terminal.Text.Length - 1;
+                }
+                catch (Exception exception)
+                {
+                    Terminal.Text += $"\n[{DateTime.Now}] cmd> ";
+                    consolee.Text += exception.Message + "\n";
+                    SendKeys.Send("{TAB}");
+                }
+
+                Terminal.ReadOnly = false;
+            }
+            else if (e.KeyCode == Keys.Back)
+            {
+                e.Handled = true;
+
+                int cursorPosition = Terminal.SelectionStart;
+
+                if (!(GetCurrentLineText().Length <= 27))
+                {
+                    Terminal.Text = Terminal.Text.Remove(cursorPosition - 1, 1);
+                    Terminal.SelectionStart = cursorPosition - 1;
+                }
+            }
+            else if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down || e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
+            {
+
+                e.Handled = true;
+                try
+                {
+                    if (e.KeyCode == Keys.Left)
+                    {
+                        int cursorPosition = Terminal.SelectionStart;
+
+                        string leftText = Terminal.Text.Substring(0, cursorPosition);
+                        string ltxet = String.Empty;
+                        for (int i = 1; i <= 4; i++)
+                        {
+                            ltxet += Terminal.Text[cursorPosition - i];
+                        }
+
+                        if (ltxet != ">dmc")
+                        {
+                            Terminal.SelectionStart -= 1;
+                        }
+                    }
+                    else if (e.KeyCode == Keys.Right && Terminal.SelectionStart != Terminal.Text.Length - 1)
+                    {
+                        Terminal.SelectionStart++;
+                    }
+                    else if (e.KeyCode == Keys.Up)
+                    {
+                        if (hisselect != 0)
+                        {
+                            --hisselect;
+                            if (hisselect < 0)
+                            {
+                                hisselect++;
+                            }
+                            Terminal.Text = Terminal.Text.Substring(0, priviousnumb) + cmdhiStrings[hisselect] + " ";
+                            SendKeys.Send("{TAB}");
+                        }
+                    }
+                    else if (e.KeyCode == Keys.Down)
+                    {
+                        if (hisselect < hisnmb)
+                        {
+                            hisselect++;
+                        }
+                        Terminal.Text = Terminal.Text.Substring(0, priviousnumb) + cmdhiStrings[hisselect] + " ";
+                        SendKeys.Send("{TAB}");
+
+                    }
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message);
+                }
+            }
+            else if (e.KeyCode == Keys.Tab)
+            {
+                e.Handled = true;
+                Terminal.SelectionStart = Terminal.Text.Length - 1;
+                Terminal.SelectionLength = 0;
+                SendKeys.Send("{BACKSPACE}");
+            }
+        }
+
+        /*private void wait(UIRichTextBox terminal)
+        {
+            
+        }*/
+        private string GetCurrentLineText()
+        {
+            int cursorPosition = Terminal.SelectionStart;
+            int currentLineIndex = Terminal.GetLineFromCharIndex(cursorPosition);
+            string currentLineText = Terminal.Lines[currentLineIndex];
+            return currentLineText;
+        }
+
+        private void inputbutton_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Tab)
+            {
+                e.Handled = true;
+                inputbutton.Text += "\n";
+            }
+        }
+
+        private void ATwho(string type, string name)
+        {
+            if (type == "add")
+            {
+                atwho.DataGridView.Rows.Add(name);
+                MessageBox.Show(atwho.Text);
+            }
+            else if (type == "clear")
+            {
+                atwho.Clear();
+            }
+        }
+
+        private void atwho_Click(object sender, EventArgs e)
+        {
+            Send("none", "none", "none", "list");
+        }
+
+        private void Terminal_MouseDown(object sender, MouseEventArgs e)
+        {
+            Terminal.SelectionStart = Terminal.TextLength - 1;
+            Terminal.SelectionLength = 0;
+        }
+
+        private void uiFlowLayoutPanel1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private void Terminal_MouseUp(object sender, MouseEventArgs e)
+        {
+            Terminal.SelectionStart = Terminal.TextLength - 1;
+            Terminal.SelectionLength = 0;
+        }
+
+        private void Interanet()
+        {
+            if (_isListening)
+            {
+                int port = 1234;
+                _listener = new TcpListener(IPAddress.Any, port);
+                _listener.Start();
+
+                _listener.BeginAcceptTcpClient(OnClientConnected, null);
 
                 connecttrit.Text = "Listening";
-                isListening = true;
+                _isListening = true;
             }
             else
             {
-                // 停止监听
-                listener.Stop();
-                listener = null;
+                _listener.Stop();
+                _listener = null;
 
                 connecttrit.Text = "StopListening";
-                isListening = false;
+                _isListening = false;
             }
         }
         private void OnClientConnected(IAsyncResult ar)
         {
-            // 客户端连接时的回调函数
-            TcpClient client = listener.EndAcceptTcpClient(ar);
+            TcpClient client = _listener.EndAcceptTcpClient(ar);
 
-            // 处理客户端请求（示例中只是简单地回复消息）
-            string message = "收到消息！";
+            string message = "getip";
             byte[] data = Encoding.UTF8.GetBytes(message);
             client.GetStream().Write(data, 0, data.Length);
             //client.Close();
-
-            // 继续异步接受下一个客户端连接
-            listener.BeginAcceptTcpClient(OnClientConnected, null);
+            _listener.BeginAcceptTcpClient(OnClientConnected, null);
         }
     }
 }

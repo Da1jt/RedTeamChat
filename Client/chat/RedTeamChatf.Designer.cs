@@ -6,10 +6,6 @@ namespace chat
 {
     partial class RedTeamChatf
     {
-        /// <summary>
-        /// 必需的设计器变量。
-        /// </summary>
-        public System.ComponentModel.IContainer components = null;
 
         /// <summary>
         /// 清理所有正在使用的资源。
@@ -32,23 +28,22 @@ namespace chat
         /// </summary>
         public void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RedTeamChatf));
-            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.about = new System.Windows.Forms.TabPage();
             this.link_jui = new Sunny.UI.UILinkLabel();
             this.uiSmoothLabel8 = new Sunny.UI.UISmoothLabel();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.console = new System.Windows.Forms.TabPage();
             this.consolee = new Sunny.UI.UIRichTextBox();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.setting = new System.Windows.Forms.TabPage();
             this.intranetfind = new Sunny.UI.UIButton();
             this.refreshfilel = new Sunny.UI.UIButton();
             this.discon = new Sunny.UI.UIButton();
-            this.uiSmoothLabel9 = new Sunny.UI.UISmoothLabel();
-            this.autodiscon = new Sunny.UI.UISwitch();
             this.uiButton2 = new Sunny.UI.UIButton();
             this.connecttrit = new Sunny.UI.UITextBox();
             this.uiWaitingBar1 = new Sunny.UI.UIWaitingBar();
@@ -63,21 +58,26 @@ namespace chat
             this.uiSmoothLabel2 = new Sunny.UI.UISmoothLabel();
             this.uiSmoothLabel1 = new Sunny.UI.UISmoothLabel();
             this.nameset = new Sunny.UI.UITextBox();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.chatroom = new System.Windows.Forms.TabPage();
+            this.atwho = new Sunny.UI.UIComboDataGridView();
             this.Emoji = new Sunny.UI.UIAvatar();
             this.uiFlowLayoutPanel1 = new Sunny.UI.UIFlowLayoutPanel();
             this.uiLine1 = new Sunny.UI.UILine();
             this.sd = new Sunny.UI.UIButton();
             this.inputbutton = new Sunny.UI.UITextBox();
             this.controlmenu1 = new Sunny.UI.UITabControlMenu();
-            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.Terminal = new Sunny.UI.UIRichTextBox();
+            this.serverfile = new System.Windows.Forms.TabPage();
             this.Serverfilegrid = new Sunny.UI.UIDataGridView();
-            this.tabPage4.SuspendLayout();
-            this.tabPage3.SuspendLayout();
-            this.tabPage2.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.about.SuspendLayout();
+            this.console.SuspendLayout();
+            this.setting.SuspendLayout();
+            this.chatroom.SuspendLayout();
             this.controlmenu1.SuspendLayout();
-            this.tabPage5.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.serverfile.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Serverfilegrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -98,16 +98,17 @@ namespace chat
             this.Aside.Size = new System.Drawing.Size(1128, 537);
             this.Aside.Style = Sunny.UI.UIStyle.Custom;
             // 
-            // tabPage4
+            // about
             // 
-            this.tabPage4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
-            this.tabPage4.Controls.Add(this.link_jui);
-            this.tabPage4.Controls.Add(this.uiSmoothLabel8);
-            this.tabPage4.Location = new System.Drawing.Point(201, 0);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(927, 534);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "about";
+            this.about.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
+            this.about.Controls.Add(this.link_jui);
+            this.about.Controls.Add(this.uiSmoothLabel8);
+            this.about.ImageIndex = 4;
+            this.about.Location = new System.Drawing.Point(201, 0);
+            this.about.Name = "about";
+            this.about.Size = new System.Drawing.Size(927, 534);
+            this.about.TabIndex = 3;
+            this.about.Text = "about";
             // 
             // link_jui
             // 
@@ -135,15 +136,16 @@ namespace chat
             this.uiSmoothLabel8.TabIndex = 11;
             this.uiSmoothLabel8.Text = "Powered by Bad_jui";
             // 
-            // tabPage3
+            // console
             // 
-            this.tabPage3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
-            this.tabPage3.Controls.Add(this.consolee);
-            this.tabPage3.Location = new System.Drawing.Point(201, 0);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(927, 534);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "console";
+            this.console.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
+            this.console.Controls.Add(this.consolee);
+            this.console.ImageIndex = 2;
+            this.console.Location = new System.Drawing.Point(201, 0);
+            this.console.Name = "console";
+            this.console.Size = new System.Drawing.Size(927, 534);
+            this.console.TabIndex = 2;
+            this.console.Text = "console";
             // 
             // consolee
             // 
@@ -160,35 +162,33 @@ namespace chat
             this.consolee.Style = Sunny.UI.UIStyle.Custom;
             this.consolee.TabIndex = 0;
             this.consolee.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
-            this.consolee.TextChanged += new System.EventHandler(this.consolee_TextChanged);
             // 
-            // tabPage2
+            // setting
             // 
-            this.tabPage2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
-            this.tabPage2.Controls.Add(this.intranetfind);
-            this.tabPage2.Controls.Add(this.refreshfilel);
-            this.tabPage2.Controls.Add(this.discon);
-            this.tabPage2.Controls.Add(this.uiSmoothLabel9);
-            this.tabPage2.Controls.Add(this.autodiscon);
-            this.tabPage2.Controls.Add(this.uiButton2);
-            this.tabPage2.Controls.Add(this.connecttrit);
-            this.tabPage2.Controls.Add(this.uiWaitingBar1);
-            this.tabPage2.Controls.Add(this.con);
-            this.tabPage2.Controls.Add(this.uiLine2);
-            this.tabPage2.Controls.Add(this.uiSmoothLabel6);
-            this.tabPage2.Controls.Add(this.port);
-            this.tabPage2.Controls.Add(this.uiSmoothLabel5);
-            this.tabPage2.Controls.Add(this.uiSmoothLabel4);
-            this.tabPage2.Controls.Add(this.server);
-            this.tabPage2.Controls.Add(this.uiSmoothLabel3);
-            this.tabPage2.Controls.Add(this.uiSmoothLabel2);
-            this.tabPage2.Controls.Add(this.uiSmoothLabel1);
-            this.tabPage2.Controls.Add(this.nameset);
-            this.tabPage2.Location = new System.Drawing.Point(201, 0);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Size = new System.Drawing.Size(927, 534);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "setting";
+            this.setting.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
+            this.setting.Controls.Add(this.intranetfind);
+            this.setting.Controls.Add(this.refreshfilel);
+            this.setting.Controls.Add(this.discon);
+            this.setting.Controls.Add(this.uiButton2);
+            this.setting.Controls.Add(this.connecttrit);
+            this.setting.Controls.Add(this.uiWaitingBar1);
+            this.setting.Controls.Add(this.con);
+            this.setting.Controls.Add(this.uiLine2);
+            this.setting.Controls.Add(this.uiSmoothLabel6);
+            this.setting.Controls.Add(this.port);
+            this.setting.Controls.Add(this.uiSmoothLabel5);
+            this.setting.Controls.Add(this.uiSmoothLabel4);
+            this.setting.Controls.Add(this.server);
+            this.setting.Controls.Add(this.uiSmoothLabel3);
+            this.setting.Controls.Add(this.uiSmoothLabel2);
+            this.setting.Controls.Add(this.uiSmoothLabel1);
+            this.setting.Controls.Add(this.nameset);
+            this.setting.ImageIndex = 1;
+            this.setting.Location = new System.Drawing.Point(201, 0);
+            this.setting.Name = "setting";
+            this.setting.Size = new System.Drawing.Size(927, 534);
+            this.setting.TabIndex = 1;
+            this.setting.Text = "setting";
             // 
             // intranetfind
             // 
@@ -234,30 +234,6 @@ namespace chat
             this.discon.TipsFont = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.discon.Click += new System.EventHandler(this.discon_Click);
             // 
-            // uiSmoothLabel9
-            // 
-            this.uiSmoothLabel9.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.uiSmoothLabel9.Location = new System.Drawing.Point(342, 277);
-            this.uiSmoothLabel9.Name = "uiSmoothLabel9";
-            this.uiSmoothLabel9.RectColor = System.Drawing.Color.Silver;
-            this.uiSmoothLabel9.Size = new System.Drawing.Size(254, 56);
-            this.uiSmoothLabel9.Style = Sunny.UI.UIStyle.Custom;
-            this.uiSmoothLabel9.TabIndex = 17;
-            this.uiSmoothLabel9.Text = "auto disconnect when \r\nchanging server(rejected)";
-            // 
-            // autodiscon
-            // 
-            this.autodiscon.Enabled = false;
-            this.autodiscon.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.autodiscon.Location = new System.Drawing.Point(425, 336);
-            this.autodiscon.MinimumSize = new System.Drawing.Size(1, 1);
-            this.autodiscon.Name = "autodiscon";
-            this.autodiscon.Size = new System.Drawing.Size(67, 33);
-            this.autodiscon.Style = Sunny.UI.UIStyle.Custom;
-            this.autodiscon.TabIndex = 16;
-            this.autodiscon.Text = "uiSwitch1";
-            this.autodiscon.ValueChanged += new Sunny.UI.UISwitch.OnValueChanged(this.uiSwitch1_ValueChanged);
-            // 
             // uiButton2
             // 
             this.uiButton2.Cursor = System.Windows.Forms.Cursors.Hand;
@@ -291,7 +267,6 @@ namespace chat
             this.connecttrit.Text = "Not connected";
             this.connecttrit.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
             this.connecttrit.Watermark = "";
-            this.connecttrit.TextChanged += new System.EventHandler(this.connecttrit_TextChanged);
             // 
             // uiWaitingBar1
             // 
@@ -303,7 +278,6 @@ namespace chat
             this.uiWaitingBar1.Style = Sunny.UI.UIStyle.Custom;
             this.uiWaitingBar1.TabIndex = 13;
             this.uiWaitingBar1.Text = "waitbar1";
-            this.uiWaitingBar1.Click += new System.EventHandler(this.uiWaitingBar1_Click);
             // 
             // con
             // 
@@ -365,7 +339,6 @@ namespace chat
             this.uiSmoothLabel5.Style = Sunny.UI.UIStyle.Custom;
             this.uiSmoothLabel5.TabIndex = 7;
             this.uiSmoothLabel5.Text = "set the server port here";
-            this.uiSmoothLabel5.Click += new System.EventHandler(this.uiSmoothLabel5_Click);
             // 
             // uiSmoothLabel4
             // 
@@ -393,7 +366,6 @@ namespace chat
             this.server.TabIndex = 4;
             this.server.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
             this.server.Watermark = "";
-            this.server.TextChanged += new System.EventHandler(this.server_TextChanged);
             // 
             // uiSmoothLabel3
             // 
@@ -404,7 +376,6 @@ namespace chat
             this.uiSmoothLabel3.Style = Sunny.UI.UIStyle.Custom;
             this.uiSmoothLabel3.TabIndex = 3;
             this.uiSmoothLabel3.Text = "default ip is xxx.xxx.xxx.xxx";
-            this.uiSmoothLabel3.Click += new System.EventHandler(this.uiSmoothLabel3_Click);
             // 
             // uiSmoothLabel2
             // 
@@ -425,7 +396,6 @@ namespace chat
             this.uiSmoothLabel1.Style = Sunny.UI.UIStyle.Custom;
             this.uiSmoothLabel1.TabIndex = 1;
             this.uiSmoothLabel1.Text = "set ur name here";
-            this.uiSmoothLabel1.Click += new System.EventHandler(this.uiSmoothLabel1_Click);
             // 
             // nameset
             // 
@@ -443,30 +413,49 @@ namespace chat
             this.nameset.TabIndex = 0;
             this.nameset.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
             this.nameset.Watermark = "";
-            this.nameset.TextChanged += new System.EventHandler(this.uiTextBox1_TextChanged_2);
             // 
-            // tabPage1
+            // chatroom
             // 
-            this.tabPage1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
-            this.tabPage1.Controls.Add(this.Emoji);
-            this.tabPage1.Controls.Add(this.uiFlowLayoutPanel1);
-            this.tabPage1.Controls.Add(this.uiLine1);
-            this.tabPage1.Controls.Add(this.sd);
-            this.tabPage1.Controls.Add(this.inputbutton);
-            this.tabPage1.Location = new System.Drawing.Point(201, 0);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(927, 534);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "chatroom";
+            this.chatroom.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
+            this.chatroom.Controls.Add(this.atwho);
+            this.chatroom.Controls.Add(this.Emoji);
+            this.chatroom.Controls.Add(this.uiFlowLayoutPanel1);
+            this.chatroom.Controls.Add(this.uiLine1);
+            this.chatroom.Controls.Add(this.sd);
+            this.chatroom.Controls.Add(this.inputbutton);
+            this.chatroom.ImageIndex = 0;
+            this.chatroom.Location = new System.Drawing.Point(201, 0);
+            this.chatroom.Name = "chatroom";
+            this.chatroom.Size = new System.Drawing.Size(927, 534);
+            this.chatroom.TabIndex = 0;
+            this.chatroom.Text = "chatroom";
+            // 
+            // atwho
+            // 
+            this.atwho.DropDownStyle = Sunny.UI.UIDropDownStyle.DropDownList;
+            this.atwho.FillColor = System.Drawing.Color.White;
+            this.atwho.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.atwho.Location = new System.Drawing.Point(9, 434);
+            this.atwho.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.atwho.MinimumSize = new System.Drawing.Size(63, 0);
+            this.atwho.Name = "atwho";
+            this.atwho.Padding = new System.Windows.Forms.Padding(0, 0, 30, 2);
+            this.atwho.Size = new System.Drawing.Size(119, 60);
+            this.atwho.Style = Sunny.UI.UIStyle.Custom;
+            this.atwho.TabIndex = 3;
+            this.atwho.Text = "@All";
+            this.atwho.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
+            this.atwho.Watermark = "";
+            this.atwho.Click += new System.EventHandler(this.atwho_Click);
             // 
             // Emoji
             // 
             this.Emoji.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Emoji.Location = new System.Drawing.Point(827, 434);
+            this.Emoji.Location = new System.Drawing.Point(836, 428);
             this.Emoji.MinimumSize = new System.Drawing.Size(1, 1);
             this.Emoji.Name = "Emoji";
             this.Emoji.Shape = Sunny.UI.UIShape.Square;
-            this.Emoji.Size = new System.Drawing.Size(69, 60);
+            this.Emoji.Size = new System.Drawing.Size(77, 76);
             this.Emoji.Style = Sunny.UI.UIStyle.Custom;
             this.Emoji.Symbol = 162961;
             this.Emoji.TabIndex = 4;
@@ -497,24 +486,24 @@ namespace chat
             // 
             this.uiLine1.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.uiLine1.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
-            this.uiLine1.Location = new System.Drawing.Point(0, 380);
+            this.uiLine1.Location = new System.Drawing.Point(-61, 392);
             this.uiLine1.MinimumSize = new System.Drawing.Size(1, 1);
             this.uiLine1.Name = "uiLine1";
-            this.uiLine1.Size = new System.Drawing.Size(924, 48);
+            this.uiLine1.Size = new System.Drawing.Size(1001, 36);
             this.uiLine1.Style = Sunny.UI.UIStyle.Custom;
             this.uiLine1.TabIndex = 2;
             // 
             // sd
             // 
             this.sd.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.sd.Font = new System.Drawing.Font("宋体", 15F);
-            this.sd.Location = new System.Drawing.Point(650, 434);
+            this.sd.Font = new System.Drawing.Font("等线", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.sd.Location = new System.Drawing.Point(686, 428);
             this.sd.MinimumSize = new System.Drawing.Size(1, 1);
             this.sd.Name = "sd";
-            this.sd.Size = new System.Drawing.Size(161, 60);
+            this.sd.Size = new System.Drawing.Size(144, 76);
             this.sd.Style = Sunny.UI.UIStyle.Custom;
             this.sd.TabIndex = 1;
-            this.sd.Text = "send";
+            this.sd.Text = "Send";
             this.sd.TipsFont = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.sd.Click += new System.EventHandler(this.uiButton1_Click);
             // 
@@ -523,54 +512,101 @@ namespace chat
             this.inputbutton.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
             this.inputbutton.CanEmpty = true;
             this.inputbutton.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.inputbutton.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.inputbutton.Location = new System.Drawing.Point(9, 428);
+            this.inputbutton.Font = new System.Drawing.Font("黑体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.inputbutton.Location = new System.Drawing.Point(136, 428);
             this.inputbutton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.inputbutton.MinimumSize = new System.Drawing.Size(1, 16);
             this.inputbutton.Multiline = true;
             this.inputbutton.Name = "inputbutton";
             this.inputbutton.Padding = new System.Windows.Forms.Padding(5);
             this.inputbutton.ScrollBarBackColor = System.Drawing.Color.SkyBlue;
+            this.inputbutton.ScrollBarHandleWidth = 3;
             this.inputbutton.ShowScrollBar = true;
             this.inputbutton.ShowText = false;
-            this.inputbutton.Size = new System.Drawing.Size(625, 76);
+            this.inputbutton.Size = new System.Drawing.Size(543, 76);
             this.inputbutton.Style = Sunny.UI.UIStyle.Custom;
             this.inputbutton.TabIndex = 0;
             this.inputbutton.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
             this.inputbutton.Watermark = "";
-            this.inputbutton.TextChanged += new System.EventHandler(this.inputbutton_TextChanged);
+            this.inputbutton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.inputbutton_KeyDown);
             // 
             // controlmenu1
             // 
             this.controlmenu1.Alignment = System.Windows.Forms.TabAlignment.Left;
+            this.controlmenu1.Controls.Add(this.chatroom);
+            this.controlmenu1.Controls.Add(this.setting);
+            this.controlmenu1.Controls.Add(this.console);
             this.controlmenu1.Controls.Add(this.tabPage1);
-            this.controlmenu1.Controls.Add(this.tabPage2);
-            this.controlmenu1.Controls.Add(this.tabPage3);
-            this.controlmenu1.Controls.Add(this.tabPage5);
-            this.controlmenu1.Controls.Add(this.tabPage4);
+            this.controlmenu1.Controls.Add(this.serverfile);
+            this.controlmenu1.Controls.Add(this.about);
             this.controlmenu1.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.controlmenu1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
             this.controlmenu1.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.controlmenu1.ImageList = this.imageList1;
+            this.controlmenu1.ItemSize = new System.Drawing.Size(200, 50);
             this.controlmenu1.Location = new System.Drawing.Point(0, 35);
+            this.controlmenu1.MenuStyle = Sunny.UI.UIMenuStyle.Custom;
             this.controlmenu1.Multiline = true;
             this.controlmenu1.Name = "controlmenu1";
             this.controlmenu1.SelectedIndex = 0;
+            this.controlmenu1.ShowToolTips = true;
             this.controlmenu1.Size = new System.Drawing.Size(1128, 534);
             this.controlmenu1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.controlmenu1.Style = Sunny.UI.UIStyle.Custom;
             this.controlmenu1.TabIndex = 2;
             this.controlmenu1.TabSelectedForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(150)))), ((int)(((byte)(136)))));
             this.controlmenu1.TabSelectedHighColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(150)))), ((int)(((byte)(136)))));
+            this.controlmenu1.TextAlignment = System.Windows.Forms.HorizontalAlignment.Left;
             // 
-            // tabPage5
+            // tabPage1
             // 
-            this.tabPage5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
-            this.tabPage5.Controls.Add(this.Serverfilegrid);
-            this.tabPage5.Location = new System.Drawing.Point(201, 0);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Size = new System.Drawing.Size(927, 534);
-            this.tabPage5.TabIndex = 4;
-            this.tabPage5.Text = "Server-File";
+            this.tabPage1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
+            this.tabPage1.Controls.Add(this.Terminal);
+            this.tabPage1.ImageIndex = 5;
+            this.tabPage1.Location = new System.Drawing.Point(201, 0);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Size = new System.Drawing.Size(927, 534);
+            this.tabPage1.TabIndex = 5;
+            this.tabPage1.Text = "Terminal";
+            // 
+            // Terminal
+            // 
+            this.Terminal.AcceptsTab = true;
+            this.Terminal.AutoWordSelection = false;
+            this.Terminal.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Terminal.FillColor = System.Drawing.Color.Black;
+            this.Terminal.FillDisableColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
+            this.Terminal.Font = new System.Drawing.Font("等线", 12F);
+            this.Terminal.ForeColor = System.Drawing.Color.LawnGreen;
+            this.Terminal.ForeDisableColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
+            this.Terminal.HideSelection = false;
+            this.Terminal.Location = new System.Drawing.Point(0, 0);
+            this.Terminal.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.Terminal.MinimumSize = new System.Drawing.Size(1, 1);
+            this.Terminal.Name = "Terminal";
+            this.Terminal.Padding = new System.Windows.Forms.Padding(2);
+            this.Terminal.RectColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.Terminal.RectDisableColor = System.Drawing.Color.Blue;
+            this.Terminal.ScrollBarColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.Terminal.ShowText = false;
+            this.Terminal.Size = new System.Drawing.Size(927, 534);
+            this.Terminal.Style = Sunny.UI.UIStyle.Custom;
+            this.Terminal.TabIndex = 0;
+            this.Terminal.TextAlignment = System.Drawing.ContentAlignment.MiddleCenter;
+            this.Terminal.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Terminal_MouseDown);
+            this.Terminal.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Terminal_MouseUp);
+            this.Terminal.KeyDown += new System.Windows.Forms.KeyEventHandler(this.richTextBox1_KeyDown);
+            // 
+            // serverfile
+            // 
+            this.serverfile.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
+            this.serverfile.Controls.Add(this.Serverfilegrid);
+            this.serverfile.ImageIndex = 3;
+            this.serverfile.Location = new System.Drawing.Point(201, 0);
+            this.serverfile.Name = "serverfile";
+            this.serverfile.Size = new System.Drawing.Size(927, 534);
+            this.serverfile.TabIndex = 4;
+            this.serverfile.Text = "Server-File";
             // 
             // Serverfilegrid
             // 
@@ -615,11 +651,21 @@ namespace chat
             this.Serverfilegrid.RowTemplate.Height = 27;
             this.Serverfilegrid.ScrollBarRectColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
             this.Serverfilegrid.SelectedIndex = -1;
-            this.Serverfilegrid.Size = new System.Drawing.Size(921, 528);
+            this.Serverfilegrid.Size = new System.Drawing.Size(921, 534);
             this.Serverfilegrid.StripeOddColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(243)))), ((int)(((byte)(255)))));
             this.Serverfilegrid.Style = Sunny.UI.UIStyle.Custom;
             this.Serverfilegrid.TabIndex = 1;
-            this.Serverfilegrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.uiDataGridView1_CellContentClick);
+            // 
+            // imageList1
+            // 
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "icons8-发送-24.png");
+            this.imageList1.Images.SetKeyName(1, "icons8-设置-24.png");
+            this.imageList1.Images.SetKeyName(2, "icons8-仪表盘-24.png");
+            this.imageList1.Images.SetKeyName(3, "icons8-共享文件夹-24.png");
+            this.imageList1.Images.SetKeyName(4, "icons8-关于-24.png");
+            this.imageList1.Images.SetKeyName(5, "icons8-命令行-24.png");
             // 
             // RedTeamChatf
             // 
@@ -630,6 +676,7 @@ namespace chat
             this.CloseAskString = "Are you sure you want to exit?";
             this.Controls.Add(this.controlmenu1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.IsForbidAltF4 = true;
             this.MaximizeBox = false;
             this.Name = "RedTeamChatf";
             this.Style = Sunny.UI.UIStyle.Custom;
@@ -641,12 +688,13 @@ namespace chat
             this.Controls.SetChildIndex(this.Aside, 0);
             this.Controls.SetChildIndex(this.controlmenu1, 0);
             this.Controls.SetChildIndex(this.Header, 0);
-            this.tabPage4.ResumeLayout(false);
-            this.tabPage3.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
+            this.about.ResumeLayout(false);
+            this.console.ResumeLayout(false);
+            this.setting.ResumeLayout(false);
+            this.chatroom.ResumeLayout(false);
             this.controlmenu1.ResumeLayout(false);
-            this.tabPage5.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.serverfile.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.Serverfilegrid)).EndInit();
             this.ResumeLayout(false);
 
@@ -655,10 +703,10 @@ namespace chat
 
         #endregion
 
-        public System.Windows.Forms.TabPage tabPage4;
-        public System.Windows.Forms.TabPage tabPage3;
+        public System.Windows.Forms.TabPage about;
+        public System.Windows.Forms.TabPage console;
         public Sunny.UI.UIRichTextBox consolee;
-        public System.Windows.Forms.TabPage tabPage2;
+        public System.Windows.Forms.TabPage setting;
         public Sunny.UI.UISmoothLabel uiSmoothLabel6;
         private Sunny.UI.UIIntegerUpDown port;
         private Sunny.UI.UISmoothLabel uiSmoothLabel5;
@@ -668,7 +716,7 @@ namespace chat
         private Sunny.UI.UISmoothLabel uiSmoothLabel2;
         public Sunny.UI.UISmoothLabel uiSmoothLabel1;
         public Sunny.UI.UITextBox nameset;
-        public System.Windows.Forms.TabPage tabPage1;
+        public System.Windows.Forms.TabPage chatroom;
         public Sunny.UI.UILine uiLine1;
         public Sunny.UI.UIButton sd;
         public Sunny.UI.UITextBox inputbutton;
@@ -680,14 +728,17 @@ namespace chat
         private Sunny.UI.UIWaitingBar uiWaitingBar1;
         private Sunny.UI.UITextBox connecttrit;
         private Sunny.UI.UIButton uiButton2;
-        private Sunny.UI.UISwitch autodiscon;
-        private Sunny.UI.UISmoothLabel uiSmoothLabel9;
         private Sunny.UI.UIButton discon;
-        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.TabPage serverfile;
         private Sunny.UI.UIDataGridView Serverfilegrid;
         private Sunny.UI.UIButton refreshfilel;
         private Sunny.UI.UIFlowLayoutPanel uiFlowLayoutPanel1;
         private Sunny.UI.UIAvatar Emoji;
         private UIButton intranetfind;
+        private ImageList imageList1;
+        private System.ComponentModel.IContainer components;
+        private TabPage tabPage1;
+        private UIRichTextBox Terminal;
+        private UIComboDataGridView atwho;
     }
 }
