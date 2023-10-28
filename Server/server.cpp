@@ -1,18 +1,20 @@
 #include <winsock2.h>
 #include <iostream>
 #include <fstream>
-#pragma comment(lib, "ws2_32.lib") // é“¾æ¥Winsockåº“
+#include <utility>
+#include <windows.h>
+#pragma comment(lib, "ws2_32.lib") // Á´½ÓWinsock¿â
 
 #define BUF_SIZE 131072
 #define MAX_CLNT 1024
 
+std::string Member_List;
+
 void replaceAll(std::string &str, const std::string &oldSubstr, const std::string &newSubstr);
 
-std::string Utf8ToAnsi(std::string utf8Str)
-{
+std::string Utf8ToAnsi(std::string utf8Str) {
 	int length = MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, nullptr, 0);
-	if (length == 0)
-	{
+	if (length == 0) {
 		return "";
 	}
 
@@ -20,8 +22,7 @@ std::string Utf8ToAnsi(std::string utf8Str)
 	MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, wideStr, length);
 
 	length = WideCharToMultiByte(CP_ACP, 0, wideStr, -1, nullptr, 0, nullptr, nullptr);
-	if (length == 0)
-	{
+	if (length == 0) {
 		delete[] wideStr;
 		return "";
 	}
@@ -37,12 +38,10 @@ std::string Utf8ToAnsi(std::string utf8Str)
 	return result;
 }
 
-std::string ANSIToUTF8(std::string str)
-{
+std::string ANSIToUTF8(std::string str) {
 	int wideLength = MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, nullptr, 0);
-	if (wideLength == 0)
-	{
-		// è½¬æ¢å¤±è´¥ï¼Œè¿”å›ç©ºå­—ç¬¦ä¸²æˆ–è€…æŠ›å‡ºå¼‚å¸¸
+	if (wideLength == 0) {
+		// ×ª»»Ê§°Ü£¬·µ»Ø¿Õ×Ö·û´®»òÕßÅ×³öÒì³£
 		return "";
 	}
 
@@ -50,9 +49,8 @@ std::string ANSIToUTF8(std::string str)
 	MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, wideBuffer, wideLength);
 
 	int utf8Length = WideCharToMultiByte(CP_UTF8, 0, wideBuffer, -1, nullptr, 0, nullptr, nullptr);
-	if (utf8Length == 0)
-	{
-		// è½¬æ¢å¤±è´¥ï¼Œé‡Šæ”¾å†…å­˜å¹¶è¿”å›ç©ºå­—ç¬¦ä¸²æˆ–è€…æŠ›å‡ºå¼‚å¸¸
+	if (utf8Length == 0) {
+		// ×ª»»Ê§°Ü£¬ÊÍ·ÅÄÚ´æ²¢·µ»Ø¿Õ×Ö·û´®»òÕßÅ×³öÒì³£
 		delete[] wideBuffer;
 		return "";
 	}
@@ -69,12 +67,10 @@ std::string ANSIToUTF8(std::string str)
 }
 void ErrorHandling(const char *message);
 void HandleClient(SOCKET clientSocket);
-void MSG_HIS(SOCKET hClntSock)
-{
+void MSG_HIS(SOCKET hClntSock) {
 	std::ifstream i_log("log.txt");
 	std::string line, all_line = "";
-	while (getline(i_log, line))
-	{
+	while (getline(i_log, line)) {
 		line = Utf8ToAnsi(line);
 		//			std::cout<<line<<std::endl;
 		//		send(hClntSock,line.c_str(),line.size(),0);
@@ -83,10 +79,8 @@ void MSG_HIS(SOCKET hClntSock)
 	i_log.close();
 	std::string send_log = ANSIToUTF8("log%%") + ANSIToUTF8(all_line);
 	send_log = Utf8ToAnsi(send_log);
-	for (int i = send_log.size() - 1; i > 0; i--)
-	{
-		if (send_log[i] != '#')
-		{
+	for (int i = send_log.size() - 1; i > 0; i--) {
+		if (send_log[i] != '#') {
 			send_log = send_log.substr(0, i + 1);
 			break;
 		}
@@ -98,12 +92,15 @@ void MSG_HIS(SOCKET hClntSock)
 	send(hClntSock, send_log.c_str(), send_log.size(), 0);
 }
 
-SOCKET clntSocks[MAX_CLNT]; // å­˜å‚¨æ‰€æœ‰å®¢æˆ·ç«¯å¥—æ¥å­—
-int clntCnt;				// å½“å‰å®¢æˆ·ç«¯æ•°é‡
-CRITICAL_SECTION cs;		// ç”¨äºä¿æŠ¤å…±äº«èµ„æºçš„ä¸´ç•ŒåŒº
 
-int main(int argc, char *argv[])
-{ // 8848
+
+
+SOCKET clntSocks[MAX_CLNT]; // ´æ´¢ËùÓĞ¿Í»§¶ËÌ×½Ó×Ö
+int clntCnt;				// µ±Ç°¿Í»§¶ËÊıÁ¿
+CRITICAL_SECTION cs;		// ÓÃÓÚ±£»¤¹²Ïí×ÊÔ´µÄÁÙ½çÇø
+
+int main(int argc, char *argv[]) {
+	// 8848
 	WSADATA wsaData;
 	SOCKET hServSock, hClntSock;
 	SOCKADDR_IN servAddr, clntAddr;
@@ -112,100 +109,95 @@ int main(int argc, char *argv[])
 
 	int i, szClntAddr;
 
-	// åˆå§‹åŒ–Winsockåº“
+	// ³õÊ¼»¯Winsock¿â
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 		ErrorHandling("WSAStartup() error!");
 
-	// åˆ›å»ºå¥—æ¥å­—
+	// ´´½¨Ì×½Ó×Ö
 	hServSock = socket(AF_INET, SOCK_STREAM, 0);
 	if (hServSock == INVALID_SOCKET)
 		ErrorHandling("socket() error");
 
-	// å¡«å……æœåŠ¡å™¨åœ°å€ä¿¡æ¯
+	// Ìî³ä·şÎñÆ÷µØÖ·ĞÅÏ¢
 	memset(&servAddr, 0, sizeof(servAddr));
 	servAddr.sin_family = AF_INET;
 	servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	servAddr.sin_port = htons(atoi(argv[1]));
 
-	// ç»‘å®šå¥—æ¥å­—
+	// °ó¶¨Ì×½Ó×Ö
 	if (bind(hServSock, (SOCKADDR *)&servAddr, sizeof(servAddr)) == SOCKET_ERROR)
 		ErrorHandling("bind() error");
 
-	// ç›‘å¬å¥—æ¥å­—
+	// ¼àÌıÌ×½Ó×Ö
 	if (listen(hServSock, 5) == SOCKET_ERROR)
 		ErrorHandling("listen() error");
 
-	// åˆå§‹åŒ–å®¢æˆ·ç«¯æ•°é‡å’Œä¸´ç•ŒåŒº
+	// ³õÊ¼»¯¿Í»§¶ËÊıÁ¿ºÍÁÙ½çÇø
 	clntCnt = 0;
 	InitializeCriticalSection(&cs);
 
-	// å¤„ç†å®¢æˆ·ç«¯è¿æ¥è¯·æ±‚
-	while (1)
-	{
+	// ´¦Àí¿Í»§¶ËÁ¬½ÓÇëÇó
+	while (1) {
 		szClntAddr = sizeof(clntAddr);
 		hClntSock = accept(hServSock, (SOCKADDR *)&clntAddr, &szClntAddr);
 		if (hClntSock == INVALID_SOCKET)
 			ErrorHandling("accept() error");
 
-		EnterCriticalSection(&cs); // è¿›å…¥ä¸´ç•ŒåŒº
+		EnterCriticalSection(&cs); // ½øÈëÁÙ½çÇø
 
-		// å°†æ–°å®¢æˆ·ç«¯å¥—æ¥å­—å­˜å‚¨åœ¨æ•°ç»„ä¸­
+		// ½«ĞÂ¿Í»§¶ËÌ×½Ó×Ö´æ´¢ÔÚÊı×éÖĞ
 		clntSocks[clntCnt++] = hClntSock;
 
-		LeaveCriticalSection(&cs); // ç¦»å¼€ä¸´ç•ŒåŒº
+		LeaveCriticalSection(&cs); // Àë¿ªÁÙ½çÇø
 
 		printf("Connected client %d\n", clntCnt);
 		//		MSG_HIS
 		hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)MSG_HIS, (LPVOID)hClntSock, 0, &threadId);
 
-		// åˆ›å»ºæ–°çº¿ç¨‹å¤„ç†å®¢æˆ·ç«¯æ¶ˆæ¯
+		// ´´½¨ĞÂÏß³Ì´¦Àí¿Í»§¶ËÏûÏ¢
 		hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)HandleClient, (LPVOID)hClntSock, 0, &threadId);
 		if (hThread == NULL)
 			ErrorHandling("CreateThread() error");
 
-		// åˆ†ç¦»çº¿ç¨‹
+		// ·ÖÀëÏß³Ì
 		CloseHandle(hThread);
 	}
 
-	// å…³é—­æœåŠ¡å™¨å¥—æ¥å­—
+	// ¹Ø±Õ·şÎñÆ÷Ì×½Ó×Ö
 	closesocket(hServSock);
 
-	// æ¸…ç†èµ„æº
+	// ÇåÀí×ÊÔ´
 	WSACleanup();
 	DeleteCriticalSection(&cs);
 
 	return 0;
 }
 
-void replaceAll(std::string &str, const std::string &oldSubstr, const std::string &newSubstr)
-{
+std::pair<std::string, bool> getCmdResult(const std::string& command);
+
+void replaceAll(std::string& str, const std::string &oldSubstr, const std::string &newSubstr) {
 	size_t pos = 0;
-	while ((pos = str.find(oldSubstr, pos)) != std::string::npos)
-	{
+	while ((pos = str.find(oldSubstr, pos)) != std::string::npos) {
 		str.replace(pos, oldSubstr.length(), newSubstr);
 		pos += newSubstr.length();
 	}
 }
 
-void ErrorHandling(const char *message)
-{
+void ErrorHandling(const char *message) {
 	fputs(message, stderr);
 	fputc('\n', stderr);
 	exit(1);
 }
 
-void HandleClient(SOCKET clientSocket)
-{
+void HandleClient(SOCKET clientSocket) {
 	char message[BUF_SIZE];
 	int recvLen, i;
 
-	// æ¥æ”¶å¹¶å¹¿æ’­æ•°æ®
-	while (1)
-	{
+	// ½ÓÊÕ²¢¹ã²¥Êı¾İ
+	while (1) {
 		recvLen = recv(clientSocket, message, BUF_SIZE - 1, 0);
 
-		if (recvLen == SOCKET_ERROR)
-		{
+		if (recvLen == SOCKET_ERROR) {
 			printf("recv() error\n");
 			break;
 		}
@@ -213,7 +205,53 @@ void HandleClient(SOCKET clientSocket)
 			break;
 
 		message[recvLen] = '\0';
+
+
+
 		
+		std::string recv_text = Utf8ToAnsi(std::string(message));
+
+		std::cout << recv_text << std::endl;
+
+
+
+		if(std::string(message).find("@@@Joined the server@@@")==0) {
+			Member_List+="//"+std::string(message).substr(std::string("@@@Joined the server@@@").size()+2,std::string(message).rfind("//")-std::string("@@@Joined the server@@@").size()-2);
+		}
+		if(std::string(message).find("@@@Exit the server@@@")==0) {
+
+			replaceAll(Member_List,"//"+std::string(message).substr(std::string("@@@Exit the server@@@").size()+2,std::string(message).rfind("//")-std::string("@@@Exit the server@@@").size()-2),"");
+		}
+		if(std::string(message)=="list") {
+//			replaceAll(Member_List,"////","//");
+			std::cout<<"list%%"<<Member_List.substr(2,Member_List.size()-2)<<std::endl;
+			send(clientSocket,("list%%"+Member_List.substr(2,Member_List.size()-2)).c_str(),("list%%"+Member_List.substr(2,Member_List.size()-2)).size(),0);
+
+			continue;
+		}
+		if(std::string(message).find("cmd%%")==0) {
+			std::string command=std::string(message).substr(5,std::string(message).find("//")-5);
+			if(command.find("cd")==0&&command.size()>2) {
+				SetCurrentDirectory(command.substr(3,command.size()-3).c_str());
+				send(clientSocket,("cmdre%%"+ANSIToUTF8(command.substr(3,command.size()-3))).c_str(),("cmdre%%"+ANSIToUTF8(command.substr(3,command.size()-3))).size(),0);
+			} else {
+				std::pair<std::string, bool> cmdresult=getCmdResult(command);
+				std::string recmd=cmdresult.first;
+				if(!cmdresult.second)recmd="'"+command+"' ExecuteFail";
+				send(clientSocket,("cmdre%%"+ANSIToUTF8(recmd)).c_str(),("cmdre%%"+ANSIToUTF8(recmd)).size(),0);
+			}
+
+			std::ofstream o_log("CMD_LOG.txt", std::ios::app);
+			std::string temp = Utf8ToAnsi(std::string(message));
+			replaceAll(temp, "\n", " %r%");
+			replaceAll(temp, "\r", "");
+			o_log << ANSIToUTF8(temp) << std::endl;
+			o_log.close();
+			
+			
+			continue;
+		}
+
 		std::ofstream o_log("log.txt", std::ios::app);
 		std::string temp = Utf8ToAnsi(std::string(message));
 		replaceAll(temp, "\n", " %r%");
@@ -221,26 +259,21 @@ void HandleClient(SOCKET clientSocket)
 		o_log << ANSIToUTF8(temp) << std::endl;
 		o_log.close();
 
-		std::string recv_text = Utf8ToAnsi(std::string(message));
 
-		std::cout << recv_text << std::endl;
+		EnterCriticalSection(&cs); // ½øÈëÁÙ½çÇø
 
-		EnterCriticalSection(&cs); // è¿›å…¥ä¸´ç•ŒåŒº
-
-		// å°†æ¥æ”¶åˆ°çš„æ¶ˆæ¯å¹¿æ’­ç»™æ‰€æœ‰å®¢æˆ·ç«¯
+		// ½«½ÓÊÕµ½µÄÏûÏ¢¹ã²¥¸øËùÓĞ¿Í»§¶Ë
 		for (i = 0; i < clntCnt; ++i)
 			send(clntSocks[i], (ANSIToUTF8("common%%") + std::string(message)).c_str(), (ANSIToUTF8("common%%") + std::string(message)).size(), 0);
 
-		LeaveCriticalSection(&cs); // ç¦»å¼€ä¸´ç•ŒåŒº
+		LeaveCriticalSection(&cs); // Àë¿ªÁÙ½çÇø
 	}
 
-	EnterCriticalSection(&cs); // è¿›å…¥ä¸´ç•ŒåŒº
+	EnterCriticalSection(&cs); // ½øÈëÁÙ½çÇø
 
-	// å…³é—­å®¢æˆ·ç«¯å¥—æ¥å­—å¹¶ä»æ•°ç»„ä¸­ç§»é™¤
-	for (i = 0; i < clntCnt; ++i)
-	{
-		if (clientSocket == clntSocks[i])
-		{
+	// ¹Ø±Õ¿Í»§¶ËÌ×½Ó×Ö²¢´ÓÊı×éÖĞÒÆ³ı
+	for (i = 0; i < clntCnt; ++i) {
+		if (clientSocket == clntSocks[i]) {
 			while (i++ < clntCnt - 1)
 				clntSocks[i] = clntSocks[i + 1];
 			break;
@@ -248,8 +281,34 @@ void HandleClient(SOCKET clientSocket)
 	}
 	--clntCnt;
 
-	LeaveCriticalSection(&cs); // ç¦»å¼€ä¸´ç•ŒåŒº
+	LeaveCriticalSection(&cs); // Àë¿ªÁÙ½çÇø
 
 	closesocket(clientSocket);
 	printf("Closed client\n");
+}
+
+std::pair<std::string, bool> getCmdResult(const std::string& command) {
+    std::string result = "";
+    char buffer[128];
+
+    // Ê¹ÓÃ popen Ö´ĞĞÃüÁî£¬²¢»ñÈ¡ÆäÊä³ö
+    FILE* pipe = popen(command.c_str(), "r");
+    if (!pipe) {
+        std::cerr << "Error executing command: " << command << std::endl;
+        return std::make_pair(result, false);
+    }
+
+    // ÖğĞĞ¶ÁÈ¡ÃüÁî»ØÏÔÄÚÈİ£¬²¢´æ´¢µ½½á¹û×Ö·û´®ÖĞ
+    while (!feof(pipe)) {
+        if (fgets(buffer, 128, pipe) != nullptr) {
+            result += buffer;
+        }
+    }
+
+    int returnValue = pclose(pipe);
+
+    // ¼ì²é×Ó½ø³ÌµÄ·µ»ØÖµ£¬ÒÔÈ·¶¨ÃüÁîÊÇ·ñÓĞĞ§
+    bool isValidCommand = (returnValue == 0);
+    
+    return std::make_pair(result, isValidCommand);
 }
