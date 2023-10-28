@@ -141,12 +141,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\SunnyUI.Common.dll" />
-    <EmbeddedResource Include="Resources\SunnyUI.dll" />
-    <EmbeddedResource Include="SunnyUI.Common.dll" />
-    <EmbeddedResource Include="SunnyUI.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4.8 %28x86 和 x64%29</ProductName>
