@@ -684,7 +684,6 @@ namespace chat
             this.TextAlignment = System.Drawing.StringAlignment.Center;
             this.ZoomScaleRect = new System.Drawing.Rectangle(19, 19, 1128, 505);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.RedTeamChat_FormClosed);
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.Controls.SetChildIndex(this.Aside, 0);
             this.Controls.SetChildIndex(this.controlmenu1, 0);
             this.Controls.SetChildIndex(this.Header, 0);

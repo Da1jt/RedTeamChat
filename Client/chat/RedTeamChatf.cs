@@ -42,7 +42,10 @@ namespace chat
                 Serverfilegrid.ReadOnly = true;
                 Serverfilegrid.AllowUserToDeleteRows = false;
                 atwho.DataGridView.Columns.Add("name", "name");
-
+                /*atwho.DataGridView.ClearRows();
+                atwho.DataGridView.Rows.Add("All");
+                atwho.DataGridView.Rows.Add("Demo1");
+                atwho.DataGridView.Rows.Add("Demo2");*/
             }
             catch (Exception e)
             {
@@ -53,7 +56,7 @@ namespace chat
 
         }
         [DllImport("user32.dll")]
-        public static extern bool FlashWindow(IntPtr hwnd, bool bInvert);
+        private static extern bool FlashWindow(IntPtr hwnd, bool bInvert);
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
@@ -235,29 +238,20 @@ namespace chat
                 {
                     MessageBox.Show("name cannot be blank");
                 }
-                else if (Valider(inputbutton.Text, ""))
-                {
-                }
-                else if (_contrigger)
+                else if (_contrigger && !(Valider(inputbutton.Text, "")))
                 {
                     Send(inputbutton.Text, nameset.Text, currentTime.ToString(), "common");
                 }
 
             }
-            else if (Valider(inputbutton.Text, ""))
+            else if (!(Valider(inputbutton.Text, "")))
             {
 
-            }
-            else
-            {
                 if (nameset.Text == "")
                 {
                     MessageBox.Show("name cannot be blank");
                 }
-                else if (Valider(nameset.Text, "name"))
-                {
-                }
-                else
+                else if (!(Valider(nameset.Text, "name")))
                 {
                     Send(inputbutton.Text, nameset.Text, currentTime.ToString(), "common");
                 }
@@ -266,32 +260,32 @@ namespace chat
 
         private bool Valider(string i, string t)
         {
-            if (TagDetect(i) == 0)
+            //int TD = TagDetect(i);
+            if (_contrigger)
             {
-                MessageBox.Show("// is not allowed in " + t);
-                return true;
+                switch (TagDetect(i))
+                {
+                    case 0:
+                        MessageBox.Show("// is not allowed in " + t);
+                        return true;
+                    case 1:
+                        MessageBox.Show("## is not allowed in " + t);
+                        return true;
+                    case 3:
+                        MessageBox.Show("%% is not allowed in " + t);
+                        return true;
+                    case 4:
+                        MessageBox.Show("@@@ is not allowed in " + t);
+                        return true;
+                    default:
+                        return false;
+                }
             }
-            else if (TagDetect(i) == 1)
-            {
-                MessageBox.Show("## is not allowed in " + t);
-                return true;
-            }
-            else if (TagDetect(i) == 3)
-            {
-                MessageBox.Show("%% is not allowed in " + t);
-                return true;
-            }
-            else if (TagDetect(i) == 4)
-            {
-                MessageBox.Show("@@@ is not allowed in " + t);
-                return true;
-            }
-            else if (!_contrigger)
+            else
             {
                 MessageBox.Show("U need to connect to the server before sending");
                 return true;
             }
-            return false;
         }
         private void link_jui_Click(object sender, EventArgs e)
         {
@@ -301,7 +295,7 @@ namespace chat
         public void con_Click(object sender, EventArgs e)
         {
 
-            if (_connectb/* && autodisconnect*/)
+            if (_connectb)
             {
                 try
                 {
@@ -359,16 +353,15 @@ namespace chat
                         serverIp = ipAddresses[0];
                     }
 
-                    int serverPort = (int)port.Value;
-
+                    int serverPort = port.Value;
                     IPEndPoint serverEp = new IPEndPoint(serverIp, serverPort);
                     _clientSocket.Connect(serverEp);
-                    consolee.Text += "------------\n" + "Connected to the server " + serverIp + " port " + serverPort + "\n------------\n";
+                    consolee.Text += $"------------\nConnected to the server {serverIp}:{serverPort} \n------------\n";
                     Tips();
                     Thread receiveThread = new Thread(ReceiveData);
                     receiveThread.Start(_clientSocket);
                     _contrigger = true;
-                    this.Text = "RedTeamChat - " + nameset.Text + " - " + serverIp + ":" + serverPort;
+                    this.Text = $"RedTeamChat - {nameset.Text}  - {serverIp}:{serverPort}";
                     connecttrit.Text = "Connected";
                     nameset.Enabled = false;
                     con.Enabled = false;
@@ -616,39 +609,6 @@ namespace chat
             }
         }
 
-        /*private void log_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (_contrigger)
-                {
-                    Send("none", "none", "none", "log");
-                    this.Invoke(new Action((() =>
-                    {
-                        consolee.Text += "Request -Get history- sended\n";
-                    })));
-                }
-                else
-                {
-                    this.Invoke(new Action((() =>
-                    {
-                        consolee.Text += "U need to connect before Getting history\n";
-                    })));
-                }
-            }
-            catch (Exception exception)
-            {
-                this.Invoke(new Action((() =>
-                {
-                    consolee.Text += exception.Message + "\n";
-                })));
-                throw;
-            }
-        }*/
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
 
 
         public void Tips()
@@ -833,9 +793,6 @@ namespace chat
                     richTextBox.Radius = 11;
                     richTextBox.FillColor = Color.SkyBlue;
                     richTextBox.AutoWordSelection = true;
-                    /*richTextBox.MouseEnter += uiFlowLayoutPanel1Control_enter;
-                    richTextBox.MouseLeave += uiFlowLayoutPanel1Control_leave;*/
-                    richTextBox.RadiusSides = ((Sunny.UI.UICornerRadiusSides)((Sunny.UI.UICornerRadiusSides.RightTop | Sunny.UI.UICornerRadiusSides.RightBottom)));
                     richTextBox.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
                     AdjustRichTextBoxSize(richTextBox);
                     uiFlowLayoutPanel1.Controls.Add(richTextBox);
@@ -860,7 +817,7 @@ namespace chat
                         catch (Exception e)
                         {
                             MessageBox.Show(e.Message, "Err");
-                            //throw;
+                            consolee.Text += e.Message + "\n";
                         }
                     })));
                 }
@@ -1001,29 +958,10 @@ namespace chat
 
 }*/
 
-        private void Fadetext(string text)
-        {
-            UISmoothLabel smoothLabel = new UISmoothLabel();
-            smoothLabel.Text = text;
-            smoothLabel.Size = new Size(300, 300);
-            smoothLabel.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-
-            controlmenu1.SelectedTab.Controls.Add(smoothLabel);
-            while (true)
-            {
-                smoothLabel.BackColor = System.Drawing.Color.FromArgb(smoothLabel.BackColor.A - 3, smoothLabel.BackColor);
-                smoothLabel.ForeColor = System.Drawing.Color.FromArgb(smoothLabel.ForeColor.A - 3, smoothLabel.ForeColor);
-                if (smoothLabel.BackColor.A <= 0 && smoothLabel.ForeColor.A <= 0)
-                {
-                    controlmenu1.SelectedTab.Controls.Remove(smoothLabel);
-                    break;
-                }
-            }
-        }
 
         private bool wfcmd = false;
         private int hisnmb = 0, hisselect = 0, priviousnumb;
-        private string RCEKey = String.Empty, pline = String.Empty;
+        private string RCEKey = String.Empty;
         private string[] cmdhiStrings = new string[1337];
         private string _terminalipset = "127.0.0.1", _terminalportset = "8084";
         private async void richTextBox1_KeyDown(object sender, KeyEventArgs e)
@@ -1041,9 +979,15 @@ namespace chat
                     int currentLineIndex = Terminal.GetLineFromCharIndex(Terminal.SelectionStart);
                     string previousLine = Terminal.Lines[currentLineIndex];
                     previousLine = previousLine.Substring(26, previousLine.Length - 27);
-                    cmdhiStrings[hisnmb] = previousLine; hisnmb++;
-                    hisselect = hisnmb;
-
+                    if (previousLine.StartsWith("   "))
+                    {
+                        previousLine = previousLine.Substring(1, previousLine.Length);
+                    }
+                    else if (previousLine.EndsWith("   "))
+                    {
+                        previousLine = previousLine.Substring(0, previousLine.Length - 1);
+                    }
+                    cmdhiStrings[hisnmb] = previousLine; hisnmb++; hisselect = hisnmb;
                     Terminal.Text += "\n";
                     if (previousLine == "help")
                     {
@@ -1121,7 +1065,6 @@ namespace chat
                             {
                                 /*if (RCEKey!=String.Empty)
                                 {*/
-                                DateTime currentTime = DateTime.Now;
                                 string url = $"http://{_terminalipset}:{_terminalportset}/?command={previousLine}";
                                 Uri requestUri = new Uri(url);
 
@@ -1139,20 +1082,21 @@ namespace chat
                                         }
                                         Terminal.Text += "\n->" + responseBody;
                                         Terminal.Text += $"\n[{DateTime.Now}] cmd> ";
-                                        Terminal.SelectionStart = Terminal.Text.Length;
                                         Terminal.SelectionLength = 0;
                                         wfcmd = true;
                                         this.Invoke(new Action((() =>
                                         {
                                             Terminal.Focus();
                                             SendKeys.Send("{TAB}");
+                                            SendKeys.Send("{Right}");
+                                            SendKeys.Send("{BACKSPACE}");
                                         })));
                                     }
                                     catch (HttpRequestException ex)
                                     {
                                         consolee.Text += ($"请求失败: {ex.Message}\n");
-                                        Terminal.Text += "\n->Access Deniel";
-                                        Terminal.Text += $"\n[{DateTime.Now}] cmd> ";
+                                        Terminal.Text += "\n->Access Deniel\n";
+                                        Terminal.Text += $"[{DateTime.Now}] cmd> ";
                                         Terminal.SelectionStart = Terminal.Text.Length;
                                         Terminal.SelectionLength = 0;
                                         wfcmd = true;
@@ -1160,27 +1104,23 @@ namespace chat
                                         {
                                             IntPtr foregroundWindowHandle = GetForegroundWindow();
                                             GetWindowThreadProcessId(foregroundWindowHandle, out int foregroundProcessId);
-
-                                            // 获取当前程序的进程ID
                                             int currentProcessId = Process.GetCurrentProcess().Id;
-
-                                            if (foregroundProcessId==currentProcessId)
+                                            if (foregroundProcessId == currentProcessId)
                                             {
                                                 Terminal.Focus();
                                                 SendKeys.Send("{TAB}");
+                                                SendKeys.Send("{Right}");
+                                                SendKeys.Send("{BACKSPACE}");
                                             }
                                             else
                                             {
                                                 controlmenu1.Focus();
                                             }
-                                            
-
-
                                         })));
                                     }
                                 }
-                                //Send(previousLine, RCEKey, currentTime.ToString(), "cmd");
-                                /*}
+                                /*Send(previousLine, RCEKey, currentTime.ToString(), "cmd");
+                                }
                                 else
                                 {
                                     Terminal.Text += "RCEKey Was Empty\n";
@@ -1200,9 +1140,13 @@ namespace chat
                         this.Invoke(new Action((() =>
                         {
                             SendKeys.Send("{TAB}");
+                            SendKeys.Send("{Right}");
+                            SendKeys.Send("{BACKSPACE}");
+
                         })));
                     }
                     wfcmd = false;
+                    Terminal.Text = Terminal.Text.Substring(0, Terminal.Text.Length - 1);
                     priviousnumb = Terminal.Text.Length - 1;
                 }
                 catch (Exception exception)
@@ -1220,10 +1164,20 @@ namespace chat
 
                 int cursorPosition = Terminal.SelectionStart;
 
-                if (!(GetCurrentLineText().Length <= 27))
+                if (GetCurrentLineText().Length > 27)
                 {
-                    Terminal.Text = Terminal.Text.Remove(cursorPosition - 1, 1);
-                    Terminal.SelectionStart = cursorPosition - 1;
+                    string ltxet = String.Empty;
+                    for (int i = 1; i <= 6; i++)
+                    {
+                        ltxet += Terminal.Text[cursorPosition - i];
+                    }
+
+                    if (ltxet != ">dmc ]")
+                    {
+                        Terminal.Text = Terminal.Text.Remove(cursorPosition - 1, 1);
+                        Terminal.SelectionStart = cursorPosition - 1;
+                    }
+                    
                 }
             }
             else if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down || e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
@@ -1261,8 +1215,11 @@ namespace chat
                             {
                                 hisselect++;
                             }
-                            Terminal.Text = Terminal.Text.Substring(0, priviousnumb) + cmdhiStrings[hisselect] + " ";
+                            Terminal.Text = Terminal.Text.Substring(0, priviousnumb+1) + cmdhiStrings[hisselect] + " ";
                             SendKeys.Send("{TAB}");
+                            SendKeys.Send("{Right}");
+                            SendKeys.Send("{BACKSPACE}");
+                            Terminal.SelectionStart = Terminal.Text.Length;
                         }
                     }
                     else if (e.KeyCode == Keys.Down)
@@ -1271,8 +1228,10 @@ namespace chat
                         {
                             hisselect++;
                         }
-                        Terminal.Text = Terminal.Text.Substring(0, priviousnumb) + cmdhiStrings[hisselect] + " ";
+                        Terminal.Text = Terminal.Text.Substring(0, priviousnumb+1) + cmdhiStrings[hisselect] + " ";
                         SendKeys.Send("{TAB}");
+                        SendKeys.Send("{Right}");
+                        SendKeys.Send("{BACKSPACE}");
 
                     }
                 }
@@ -1286,14 +1245,9 @@ namespace chat
                 e.Handled = true;
                 Terminal.SelectionStart = Terminal.Text.Length - 1;
                 Terminal.SelectionLength = 0;
-                SendKeys.Send("{BACKSPACE}");
             }
         }
 
-        /*private void wait(UIRichTextBox terminal)
-        {
-            
-        }*/
         private string GetCurrentLineText()
         {
             int cursorPosition = Terminal.SelectionStart;
@@ -1316,7 +1270,7 @@ namespace chat
             if (type == "add")
             {
                 atwho.DataGridView.Rows.Add(name);
-                MessageBox.Show(atwho.Text);
+                //MessageBox.Show(atwho.Text);
             }
             else if (type == "clear")
             {
@@ -1324,7 +1278,7 @@ namespace chat
             }
         }
 
-        private void atwho_Click(object sender, EventArgs e)
+        private void atwho_Click(object ender, EventArgs e)
         {
             Send("none", "none", "none", "list");
         }
@@ -1332,6 +1286,7 @@ namespace chat
         private void Terminal_MouseDown(object sender, MouseEventArgs e)
         {
             Terminal.SelectionStart = Terminal.TextLength - 1;
+
             Terminal.SelectionLength = 0;
         }
 
@@ -1343,6 +1298,7 @@ namespace chat
 
         private void Terminal_MouseUp(object sender, MouseEventArgs e)
         {
+
             Terminal.SelectionStart = Terminal.TextLength - 1;
             Terminal.SelectionLength = 0;
         }
@@ -1351,8 +1307,8 @@ namespace chat
         {
             if (_isListening)
             {
-                int port = 1234;
-                _listener = new TcpListener(IPAddress.Any, port);
+                int port_ = 1234;
+                _listener = new TcpListener(IPAddress.Any, port_);
                 _listener.Start();
 
                 _listener.BeginAcceptTcpClient(OnClientConnected, null);
