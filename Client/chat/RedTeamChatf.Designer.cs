@@ -29,11 +29,11 @@ namespace chat
         public void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RedTeamChatf));
             this.about = new System.Windows.Forms.TabPage();
             this.link_jui = new Sunny.UI.UILinkLabel();
@@ -59,12 +59,12 @@ namespace chat
             this.uiSmoothLabel1 = new Sunny.UI.UISmoothLabel();
             this.nameset = new Sunny.UI.UITextBox();
             this.chatroom = new System.Windows.Forms.TabPage();
-            this.atwho = new Sunny.UI.UIComboDataGridView();
             this.Emoji = new Sunny.UI.UIAvatar();
+            this.sd = new Sunny.UI.UIButton();
+            this.Atto = new Sunny.UI.UIComboBox();
+            this.inputbutton = new Sunny.UI.UITextBox();
             this.uiFlowLayoutPanel1 = new Sunny.UI.UIFlowLayoutPanel();
             this.uiLine1 = new Sunny.UI.UILine();
-            this.sd = new Sunny.UI.UIButton();
-            this.inputbutton = new Sunny.UI.UITextBox();
             this.controlmenu1 = new Sunny.UI.UITabControlMenu();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.Terminal = new Sunny.UI.UIRichTextBox();
@@ -417,36 +417,18 @@ namespace chat
             // chatroom
             // 
             this.chatroom.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
-            this.chatroom.Controls.Add(this.atwho);
             this.chatroom.Controls.Add(this.Emoji);
+            this.chatroom.Controls.Add(this.sd);
+            this.chatroom.Controls.Add(this.Atto);
+            this.chatroom.Controls.Add(this.inputbutton);
             this.chatroom.Controls.Add(this.uiFlowLayoutPanel1);
             this.chatroom.Controls.Add(this.uiLine1);
-            this.chatroom.Controls.Add(this.sd);
-            this.chatroom.Controls.Add(this.inputbutton);
             this.chatroom.ImageIndex = 0;
             this.chatroom.Location = new System.Drawing.Point(201, 0);
             this.chatroom.Name = "chatroom";
             this.chatroom.Size = new System.Drawing.Size(927, 534);
             this.chatroom.TabIndex = 0;
             this.chatroom.Text = "chatroom";
-            // 
-            // atwho
-            // 
-            this.atwho.DropDownStyle = Sunny.UI.UIDropDownStyle.DropDownList;
-            this.atwho.FillColor = System.Drawing.Color.White;
-            this.atwho.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.atwho.Location = new System.Drawing.Point(9, 434);
-            this.atwho.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.atwho.MinimumSize = new System.Drawing.Size(63, 0);
-            this.atwho.Name = "atwho";
-            this.atwho.Padding = new System.Windows.Forms.Padding(0, 0, 30, 2);
-            this.atwho.Size = new System.Drawing.Size(119, 60);
-            this.atwho.Style = Sunny.UI.UIStyle.Custom;
-            this.atwho.TabIndex = 3;
-            this.atwho.Text = "@All";
-            this.atwho.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
-            this.atwho.Watermark = "";
-            this.atwho.Click += new System.EventHandler(this.atwho_Click);
             // 
             // Emoji
             // 
@@ -461,6 +443,70 @@ namespace chat
             this.Emoji.TabIndex = 4;
             this.Emoji.Text = "uiAvatar1";
             this.Emoji.Click += new System.EventHandler(this.Emoji_Click);
+            // 
+            // sd
+            // 
+            this.sd.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.sd.Font = new System.Drawing.Font("等线", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.sd.Location = new System.Drawing.Point(697, 428);
+            this.sd.MinimumSize = new System.Drawing.Size(1, 1);
+            this.sd.Name = "sd";
+            this.sd.Size = new System.Drawing.Size(144, 76);
+            this.sd.Style = Sunny.UI.UIStyle.Custom;
+            this.sd.TabIndex = 1;
+            this.sd.Text = "Send";
+            this.sd.TipsFont = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.sd.Click += new System.EventHandler(this.uiButton1_Click);
+            // 
+            // Atto
+            // 
+            this.Atto.AutoValidate = System.Windows.Forms.AutoValidate.EnableAllowFocusChange;
+            this.Atto.DataSource = null;
+            this.Atto.Enabled = false;
+            this.Atto.FillColor = System.Drawing.Color.White;
+            this.Atto.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Atto.Items.AddRange(new object[] {
+            "@All"});
+            this.Atto.Location = new System.Drawing.Point(9, 436);
+            this.Atto.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.Atto.MinimumSize = new System.Drawing.Size(63, 0);
+            this.Atto.Name = "Atto";
+            this.Atto.Padding = new System.Windows.Forms.Padding(0, 0, 30, 2);
+            this.Atto.Size = new System.Drawing.Size(138, 60);
+            this.Atto.Style = Sunny.UI.UIStyle.Custom;
+            this.Atto.TabIndex = 3;
+            this.Atto.TabStop = false;
+            this.Atto.Text = "@All";
+            this.Atto.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
+            this.Atto.Watermark = "";
+            this.Atto.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Atto_KeyDown);
+            this.Atto.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Atto_KeyPress);
+            this.Atto.Click += new System.EventHandler(this.Atto_Click);
+            this.Atto.PaddingChanged += new System.EventHandler(this.Atto_PaddingChanged);
+            this.Atto.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Atto_MouseClick);
+            // 
+            // inputbutton
+            // 
+            this.inputbutton.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
+            this.inputbutton.CanEmpty = true;
+            this.inputbutton.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.inputbutton.Font = new System.Drawing.Font("黑体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.inputbutton.Location = new System.Drawing.Point(155, 428);
+            this.inputbutton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.inputbutton.MinimumSize = new System.Drawing.Size(1, 16);
+            this.inputbutton.Multiline = true;
+            this.inputbutton.Name = "inputbutton";
+            this.inputbutton.Padding = new System.Windows.Forms.Padding(5);
+            this.inputbutton.ScrollBarBackColor = System.Drawing.Color.SkyBlue;
+            this.inputbutton.ScrollBarHandleWidth = 3;
+            this.inputbutton.ShowScrollBar = true;
+            this.inputbutton.ShowText = false;
+            this.inputbutton.Size = new System.Drawing.Size(535, 76);
+            this.inputbutton.Style = Sunny.UI.UIStyle.Custom;
+            this.inputbutton.TabIndex = 0;
+            this.inputbutton.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
+            this.inputbutton.Watermark = "";
+            this.inputbutton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.inputbutton_KeyDown);
             // 
             // uiFlowLayoutPanel1
             // 
@@ -492,43 +538,6 @@ namespace chat
             this.uiLine1.Size = new System.Drawing.Size(1001, 36);
             this.uiLine1.Style = Sunny.UI.UIStyle.Custom;
             this.uiLine1.TabIndex = 2;
-            // 
-            // sd
-            // 
-            this.sd.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.sd.Font = new System.Drawing.Font("等线", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.sd.Location = new System.Drawing.Point(686, 428);
-            this.sd.MinimumSize = new System.Drawing.Size(1, 1);
-            this.sd.Name = "sd";
-            this.sd.Size = new System.Drawing.Size(144, 76);
-            this.sd.Style = Sunny.UI.UIStyle.Custom;
-            this.sd.TabIndex = 1;
-            this.sd.Text = "Send";
-            this.sd.TipsFont = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.sd.Click += new System.EventHandler(this.uiButton1_Click);
-            // 
-            // inputbutton
-            // 
-            this.inputbutton.ButtonSymbolOffset = new System.Drawing.Point(0, 0);
-            this.inputbutton.CanEmpty = true;
-            this.inputbutton.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.inputbutton.Font = new System.Drawing.Font("黑体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.inputbutton.Location = new System.Drawing.Point(136, 428);
-            this.inputbutton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.inputbutton.MinimumSize = new System.Drawing.Size(1, 16);
-            this.inputbutton.Multiline = true;
-            this.inputbutton.Name = "inputbutton";
-            this.inputbutton.Padding = new System.Windows.Forms.Padding(5);
-            this.inputbutton.ScrollBarBackColor = System.Drawing.Color.SkyBlue;
-            this.inputbutton.ScrollBarHandleWidth = 3;
-            this.inputbutton.ShowScrollBar = true;
-            this.inputbutton.ShowText = false;
-            this.inputbutton.Size = new System.Drawing.Size(543, 76);
-            this.inputbutton.Style = Sunny.UI.UIStyle.Custom;
-            this.inputbutton.TabIndex = 0;
-            this.inputbutton.TextAlignment = System.Drawing.ContentAlignment.MiddleLeft;
-            this.inputbutton.Watermark = "";
-            this.inputbutton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.inputbutton_KeyDown);
             // 
             // controlmenu1
             // 
@@ -576,7 +585,7 @@ namespace chat
             this.Terminal.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Terminal.FillColor = System.Drawing.Color.Black;
             this.Terminal.FillDisableColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
-            this.Terminal.Font = new System.Drawing.Font("等线", 12F);
+            this.Terminal.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Terminal.ForeColor = System.Drawing.Color.LawnGreen;
             this.Terminal.ForeDisableColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
             this.Terminal.HideSelection = false;
@@ -610,44 +619,44 @@ namespace chat
             // 
             // Serverfilegrid
             // 
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(243)))), ((int)(((byte)(255)))));
-            this.Serverfilegrid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(243)))), ((int)(((byte)(255)))));
+            this.Serverfilegrid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle6;
             this.Serverfilegrid.BackgroundColor = System.Drawing.Color.White;
             this.Serverfilegrid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Serverfilegrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Serverfilegrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
             this.Serverfilegrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.Serverfilegrid.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.Serverfilegrid.DefaultCellStyle = dataGridViewCellStyle8;
             this.Serverfilegrid.EnableHeadersVisualStyles = false;
             this.Serverfilegrid.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.Serverfilegrid.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
             this.Serverfilegrid.Location = new System.Drawing.Point(3, 3);
             this.Serverfilegrid.Name = "Serverfilegrid";
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(243)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Serverfilegrid.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(243)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle9.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Serverfilegrid.RowHeadersDefaultCellStyle = dataGridViewCellStyle9;
             this.Serverfilegrid.RowHeadersWidth = 51;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Serverfilegrid.RowsDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle10.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle10.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Serverfilegrid.RowsDefaultCellStyle = dataGridViewCellStyle10;
             this.Serverfilegrid.RowTemplate.Height = 27;
             this.Serverfilegrid.ScrollBarRectColor = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(160)))), ((int)(((byte)(255)))));
             this.Serverfilegrid.SelectedIndex = -1;
@@ -680,7 +689,7 @@ namespace chat
             this.MaximizeBox = false;
             this.Name = "RedTeamChatf";
             this.Style = Sunny.UI.UIStyle.Custom;
-            this.Text = "RedTeamChat";
+            this.Text = "RedTeamChat - Disconnected";
             this.TextAlignment = System.Drawing.StringAlignment.Center;
             this.ZoomScaleRect = new System.Drawing.Rectangle(19, 19, 1128, 505);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.RedTeamChat_FormClosed);
@@ -738,6 +747,6 @@ namespace chat
         private System.ComponentModel.IContainer components;
         private TabPage tabPage1;
         private UIRichTextBox Terminal;
-        private UIComboDataGridView atwho;
+        private UIComboBox Atto;
     }
 }

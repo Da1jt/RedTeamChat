@@ -22,14 +22,17 @@ namespace chat
     {
         public RedTeamChatf()
         {
+            INIProcess();
+        }
+
+        void INIProcess()
+        {
             try
             {
                 InitializeComponent();
                 discon.Hide();
-                this.Name = "RedTeamChat";
                 Application.EnableVisualStyles();
                 refreshfilel.Enabled = false;
-                this.Text = "RedTeamChat - Disconnected";
                 server.Text = "127.0.0.1";
                 Terminal.Text += $"->Ini Success\n->Use 'help' to get help\n[{DateTime.Now}] cmd> ";
                 this.Icon = Properties.Resources.chat;
@@ -41,19 +44,13 @@ namespace chat
                 Serverfilegrid.AllowUserToAddRows = false;
                 Serverfilegrid.ReadOnly = true;
                 Serverfilegrid.AllowUserToDeleteRows = false;
-                atwho.DataGridView.Columns.Add("name", "name");
-                /*atwho.DataGridView.ClearRows();
-                atwho.DataGridView.Rows.Add("All");
-                atwho.DataGridView.Rows.Add("Demo1");
-                atwho.DataGridView.Rows.Add("Demo2");*/
+                consolee.Text += "Initial Success\n";
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "Err");
-                consolee.Text += "Initial Failed\n" + e.Message;
+                consolee.Text += "Initial Failed:\n" + e.Message + "\n";
             }
-            consolee.Text += "Initial Success\n";
-
         }
         [DllImport("user32.dll")]
         private static extern bool FlashWindow(IntPtr hwnd, bool bInvert);
@@ -77,21 +74,20 @@ namespace chat
                     stream.Read(assemblyData, 0, assemblyData.Length);
                     return Assembly.Load(assemblyData);
                 }
-
                 return null;
             }
         }
 
         bool _contrigger = false, _connectb = false, _intranetSockStatus = false;
         private Socket _clientSocket;
-        public void Send(string msge, string name, string time, string type)
+        public void Send(string msge, string time, string type)
         {
-
+            string name = nameset.Text; string towho = Atto.Text;
             if (type == "common")
             {
                 try
                 {
-                    byte[] data = Encoding.UTF8.GetBytes(msge + "//" + name + "//" + time);
+                    byte[] data = Encoding.UTF8.GetBytes(msge + "//" + name + "//" + time + "//" + towho);
                     _clientSocket.Send(data);
                     inputbutton.Text = "";
                 }
@@ -99,7 +95,7 @@ namespace chat
                 {
                     consolee.Invoke(new Action(() =>
                     {
-                        consolee.Text += "Exception: " + e.Message + "\n";
+                        consolee.Text += "Exception1: " + e.Message + "\n";
                     }));
                 }
             }
@@ -114,7 +110,7 @@ namespace chat
                 {
                     consolee.Invoke(new Action(() =>
                     {
-                        consolee.Text += "Exception: " + e.Message + "\n";
+                        consolee.Text += "Exception2: " + e.Message + "\n";
                     }));
                 }
             }
@@ -122,7 +118,7 @@ namespace chat
             {
                 try
                 {
-                    string dataString = msge + "//" + name + "//" + time;
+                    string dataString = msge + "//" + name + "//" + time + "//" + towho;
                     byte[] dataBytes = Encoding.UTF8.GetBytes(dataString);
                     string base64EncodedData = Base64Encode(Encoding.UTF8, dataBytes.ToString());
                     _clientSocket.Send(Encoding.UTF8.GetBytes(base64EncodedData));
@@ -132,7 +128,7 @@ namespace chat
                 {
                     consolee.Invoke(new Action(() =>
                     {
-                        consolee.Text += "Exception: " + e.Message + "\n";
+                        consolee.Text += "Exception3: " + e.Message + "\n";
                     }));
                 }
             }
@@ -147,22 +143,23 @@ namespace chat
                 {
                     consolee.Invoke(new Action(() =>
                     {
-                        consolee.Text += "Exception: " + e.Message + "\n";
+                        consolee.Text += "Exception4: " + e.Message + "\n";
                     }));
                 }
             }
         }
-
         public int Typedetect(string rcvdata)
         {
-            if (rcvdata == "common") return 1;
-            else if (rcvdata == "list") return 2;
-            else if (rcvdata == "log") return 3;
-            else if (rcvdata == "file") return 4;
-            else if (rcvdata == "emsg") return 5;
-            else if (rcvdata == "smsg") return 6;
-            else if (rcvdata == "cmdre") return 7;
-            return 0;
+            switch (rcvdata)
+            {
+                case "common": return 1;
+                case "list": return 2;
+                case "log": return 3;
+                case "file": return 4;
+                case "emsg": return 5;
+                case "cmdre": return 6;
+                default: return 0;
+            }
         }
         public void ReceiveData(object clientSocket)
         {
@@ -186,12 +183,12 @@ namespace chat
             {
                 if (e.Message == "远程主机强迫关闭了一个现有的连接。")
                 {
-                    Lableadd("服务器断开连接", "sysinfo");
+                    Lableadd("服务器断开连接", "sysinfo", "none");
                     Disconnectgo();
                 }
                 consolee.Invoke(new Action(() =>
                 {
-                    consolee.Text += "Exception: " + e.Message + "\n";
+                    consolee.Text += "Exception5: " + e.Message + "\n";
                 }));
             }
         }
@@ -221,6 +218,10 @@ namespace chat
                 {
                     return 4;
                 }
+                else if (inp[i] == '-' && inp[i + 1] == '>')
+                {
+                    return 5;
+                }
             }
             return 2;
         }
@@ -240,7 +241,7 @@ namespace chat
                 }
                 else if (_contrigger && !(Valider(inputbutton.Text, "")))
                 {
-                    Send(inputbutton.Text, nameset.Text, currentTime.ToString(), "common");
+                    Send(inputbutton.Text, currentTime.ToString(), "common");
                 }
 
             }
@@ -253,14 +254,13 @@ namespace chat
                 }
                 else if (!(Valider(nameset.Text, "name")))
                 {
-                    Send(inputbutton.Text, nameset.Text, currentTime.ToString(), "common");
+                    Send(inputbutton.Text, currentTime.ToString(), "common");
                 }
             }
         }
 
         private bool Valider(string i, string t)
         {
-            //int TD = TagDetect(i);
             if (_contrigger)
             {
                 switch (TagDetect(i))
@@ -277,6 +277,9 @@ namespace chat
                     case 4:
                         MessageBox.Show("@@@ is not allowed in " + t);
                         return true;
+                    case 5:
+                        MessageBox.Show("-> is not allowed in " + t);
+                        return true;
                     default:
                         return false;
                 }
@@ -289,12 +292,12 @@ namespace chat
         }
         private void link_jui_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/BadJui/");
+            string JUIlink = "https://github.com/BadJui/";
+            System.Diagnostics.Process.Start(JUIlink);
         }
 
         public void con_Click(object sender, EventArgs e)
         {
-
             if (_connectb)
             {
                 try
@@ -308,7 +311,7 @@ namespace chat
                 {
                     consolee.Invoke(new Action(() =>
                     {
-                        consolee.Text += "Exception: " + exception.Message + "\n";
+                        consolee.Text += "Exception6: " + exception.Message + "\n";
                     }));
                     throw;
                 }
@@ -352,7 +355,6 @@ namespace chat
                         }
                         serverIp = ipAddresses[0];
                     }
-
                     int serverPort = port.Value;
                     IPEndPoint serverEp = new IPEndPoint(serverIp, serverPort);
                     _clientSocket.Connect(serverEp);
@@ -365,16 +367,18 @@ namespace chat
                     connecttrit.Text = "Connected";
                     nameset.Enabled = false;
                     con.Enabled = false;
+                    controlmenu1.SelectedTab = chatroom;
                     discon.Show();
-                    Send("@@@Joined the server@@@", nameset.Text, DateTime.Now.ToString(), "common");
-                    Lableadd("Self-Connected", "sysinfo");
-
+                    Send("none", "none", "list");
+                    Atto.Enabled = true;
+                    Send("@@@Joined the server@@@", DateTime.Now.ToString(), "common");
+                    Lableadd("Self-Connected", "sysinfo", "none");
                 }
                 catch (Exception ex)
                 {
                     this.Invoke(new Action(() =>
                     {
-                        consolee.Text += "Exception: " + ex.Message + "\n";
+                        consolee.Text += "Exception7: " + ex.Message + "\n";
                         MessageBox.Show(ex.Message, "Err");
                     }
                     ));
@@ -388,7 +392,7 @@ namespace chat
             {
                 if (_contrigger)
                 {
-                    Send("none", "none", "none", "list");
+                    Send("none", "none", "list");
                     consolee.Text += "Request -Get Userlist- sended\n";
 
                 }
@@ -405,7 +409,6 @@ namespace chat
                 throw;
             }
         }
-
         private void reception_analysis(string receptioninfo, int typedet)
         {
             if (typedet == 1)
@@ -419,13 +422,13 @@ namespace chat
                 string[] parts = receptioninfo.Split(new string[] { "//" }, StringSplitOptions.None);
                 this.Invoke(new Action(() =>
                 {
-                    ATwho("clear", "");
+                    Atto.Items.Clear();
+                    Atto.Items.Add("@All");
                     consolee.Text += "[----Online-UserList-Start---\n";
                     for (int i = 0; i <= tagn; i++)
                     {
                         consolee.Text += " " + parts[i] + "\n";
-                        ATwho("add", parts[i]);
-                        MessageBox.Show(parts[i]);
+                        Atto.Items.Add($"@{parts[i]}");
                     }
                     consolee.Text += "----Online-UserList-End---]\n";
                 }));
@@ -439,7 +442,7 @@ namespace chat
                     string[] parts = receptioninfo.Split(new string[] { "##" }, StringSplitOptions.None);
                     this.Invoke(new Action((() =>
                     {
-                        Lableadd("[-------Chat-history-begin-------", "text");
+                        Lableadd("[-------Chat-history-begin-------", "text", "none");
                     })));
 
                     for (int i = 0; i < tagn; i++)
@@ -451,7 +454,7 @@ namespace chat
                     }
                     this.Invoke(new Action((() =>
                     {
-                        Lableadd("-------Chat-history-end---------]", "text");
+                        Lableadd("-------Chat-history-end---------]", "text", "none");
                     })));
                 }
                 catch (Exception e)
@@ -477,13 +480,6 @@ namespace chat
             }
             else if (typedet == 6)
             {
-                if (receptioninfo.StartsWith(nameset.Text))
-                {
-                    ana_common(receptioninfo);
-                }
-            }
-            else if (typedet == 7)
-            {
 
             }
             else
@@ -498,32 +494,53 @@ namespace chat
         private void ana_common(string raw)
         {
             string[] parts = raw.Split(new string[] { "//" }, StringSplitOptions.None);
-            string firstString, secondString, thirdString;
-            if (parts.Length == 3)
+            string firstString, secondString, thirdString, fourthString;
+            if (parts.Length == 4)
             {
                 firstString = parts[0];
                 secondString = parts[1];
                 thirdString = parts[2];
-                if (nameset.Text != secondString)
+                fourthString = parts[3];
+
+                if (fourthString.EndsWith(nameset.Text) || secondString == nameset.Text || fourthString == "@All")
                 {
+                    //MessageBox.Show(fourthString + ":" + fourthString.Length);
                     Tips();
                 }
+                else
+                {
+                    //MessageBox.Show("1");
+                    return;
+                }
+
                 this.Invoke(new Action((() =>
                 {
+                    string col = String.Empty;
+                    if (fourthString.EndsWith(nameset.Text) ||
+                        (secondString == nameset.Text) && !fourthString.EndsWith("@All"))  
+                    {
+                        col = "oran";
+                    }
+                    else
+                    {
+                        col = "blue";
+                    }
                     if (firstString.StartsWith("[") && firstString.EndsWith("]"))
                     {
                         if (secondString == nameset.Text)
                         {
                             lock (lockObject)
                             {
-                                Lableadd(" User:  " + secondString + "(me) time:  " + thirdString, "text");
+                                Lableadd(" User:  " + secondString + "(me)->" + fourthString + " time:  " + thirdString,
+                                    "text", "none");
                             }
                         }
                         else
                         {
                             lock (lockObject)
                             {
-                                Lableadd(" User:  " + secondString + " time:  " + thirdString, "text");
+                                Lableadd(" User:  " + secondString + "->" + fourthString + " time:  " + thirdString,
+                                    "text", "none");
                             }
                         }
                         lock (lockObject)
@@ -537,14 +554,14 @@ namespace chat
                         {
                             lock (lockObject)
                             {
-                                Lableadd(" User:  " + secondString + "(me) time:  " + thirdString + "\n[" + firstString + "]", "sysinfo");
+                                Lableadd(" User:  " + secondString + "(me) time:  " + thirdString + "\n[" + firstString + "]", "sysinfo", "none");
                             }
                         }
                         else
                         {
                             lock (lockObject)
                             {
-                                Lableadd(" User:  " + secondString + " time:  " + thirdString + "\n[" + firstString + "]", "sysinfo");
+                                Lableadd(" User:  " + secondString + " time:  " + thirdString + "\n[" + firstString + "]", "sysinfo", "none");
                             }
                         }
                     }
@@ -554,16 +571,20 @@ namespace chat
                         {
                             lock (lockObject)
                             {
-                                Lableadd(" User:  " + secondString + "(me) time:  " + thirdString + "\n", "text");
-                                Lableadd(firstString, "msgbox");
+                                Lableadd(
+                                    " User:  " + secondString + "(me)->" + fourthString + " time:  " + thirdString +
+                                    "\n", "text", "none");
+                                Lableadd(firstString, "msgbox", col);
                             }
                         }
                         else
                         {
                             lock (lockObject)
                             {
-                                Lableadd(" User:  " + secondString + " time:  " + thirdString + "\n", "text");
-                                Lableadd(firstString, "msgbox");
+                                Lableadd(
+                                    " User:  " + secondString + "->" + fourthString + " time:  " + thirdString + "\n",
+                                    "text", "none");
+                                Lableadd(firstString, "msgbox", col);
                             }
 
                         }
@@ -586,14 +607,15 @@ namespace chat
                     this.Invoke(new Action((() =>
                     {
                         DateTime currentTime = DateTime.Now;
-                        Send("@@@Exit the server@@@", nameset.Text, currentTime.ToString(), "common");
+                        Send("@@@Exit the server@@@", currentTime.ToString(), "common");
                         _clientSocket.Shutdown(SocketShutdown.Both);
                         connecttrit.Text = "Disconnected";
                         nameset.Enabled = true;
                         _contrigger = false;
+                        Atto.Enabled = false;
                         consolee.Text += "Disconnected\n";
                         this.Text = "RedTeamChat - Disconnected";
-                        Lableadd("Self-[Disconnected]", "sysinfo");
+                        Lableadd("Self-[Disconnected]", "sysinfo", "none");
                         discon.Hide();
                         con.Enabled = true;
                     })));
@@ -608,9 +630,6 @@ namespace chat
                 }
             }
         }
-
-
-
         public void Tips()
         {
             this.Invoke(new Action((() =>
@@ -738,7 +757,7 @@ namespace chat
             DateTime currentTime = DateTime.Now;
             if (emoji.GlobalData.emojiset != "none")
             {
-                Send("[" + emoji.GlobalData.emojiset + "]", nameset.Text, currentTime.ToString(), "common");
+                Send("[" + emoji.GlobalData.emojiset + "]", currentTime.ToString(), "common");
             }
 
         }
@@ -761,7 +780,7 @@ namespace chat
                     }
                     else
                     {
-                        Send(inpfilename.GlobalVariables.Filenamechange, nameset.Text, "", "file");
+                        Send(inpfilename.GlobalVariables.Filenamechange, "", "file");
                     }
                 }
             }
@@ -769,7 +788,7 @@ namespace chat
 
         private readonly object lockObject = new object();
 
-        private void Lableadd(string inp, string type)
+        private void Lableadd(string inp, string type, string color)
         {
             lock (lockObject)
             {
@@ -788,10 +807,17 @@ namespace chat
                 else if (type == "msgbox")
                 {
                     UIRichTextBox richTextBox = new UIRichTextBox();
+                    if (color == "oran")
+                    {
+                        richTextBox.FillColor = Color.Orange;
+                    }
+                    else if (color == "blue")
+                    {
+                        richTextBox.FillColor = Color.SkyBlue;
+                    }
                     richTextBox.Text = inp;
                     richTextBox.ReadOnly = true;
                     richTextBox.Radius = 11;
-                    richTextBox.FillColor = Color.SkyBlue;
                     richTextBox.AutoWordSelection = true;
                     richTextBox.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
                     AdjustRichTextBoxSize(richTextBox);
@@ -852,15 +878,15 @@ namespace chat
         {
             if (emojiname == "[Doge]")
             {
-                Lableadd("Doge", "emoji");
+                Lableadd("Doge", "emoji", "none");
             }
             else if (emojiname == "[E]")
             {
-                Lableadd("E", "emoji");
+                Lableadd("E", "emoji", "none");
             }
             else
             {
-                Lableadd(emojiname, "text");
+                Lableadd(emojiname, "text", "none");
             }
         }
         private void RedTeamChat_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
@@ -868,7 +894,7 @@ namespace chat
             DateTime currentTime = DateTime.Now;
             if (_contrigger)
             {
-                Send("@@@Exit the server@@@", nameset.Text, currentTime.ToString(), "common");
+                Send("@@@Exit the server@@@", currentTime.ToString(), "common");
                 _clientSocket.Shutdown(SocketShutdown.Both);
             }
             ProcessStartInfo psi = new ProcessStartInfo
@@ -888,10 +914,7 @@ namespace chat
         {
             using (Graphics graphics = richTextBox.CreateGraphics())
             {
-                // 计算文本的大小
                 SizeF textSize = graphics.MeasureString(richTextBox.Text, richTextBox.Font);
-
-                // 设置 UIRichTextBox 的大小
                 richTextBox.Size = new Size((int)textSize.Width + 20, (int)textSize.Height + 20);
             }
         }
@@ -958,7 +981,6 @@ namespace chat
 
 }*/
 
-
         private bool wfcmd = false;
         private int hisnmb = 0, hisselect = 0, priviousnumb;
         private string RCEKey = String.Empty;
@@ -995,10 +1017,11 @@ namespace chat
                     }
                     else if (previousLine.StartsWith("rkey "))
                     {
+
                         if (RCEKey == String.Empty)
                         {
                             RCEKey = previousLine.Substring(5);
-                            Terminal.Text += "->RCEKey Seted\n";
+                            Terminal.Text += "->RCEKey Set\n";
                         }
                         else
                         {
@@ -1032,7 +1055,6 @@ namespace chat
                         {
                             Terminal.Text += $"->Invalid IP\nTerminal Terget:{_terminalipset}:{_terminalportset}\n";
                         }
-
                     }
                     else if (previousLine.StartsWith("tp "))
                     {
@@ -1177,7 +1199,7 @@ namespace chat
                         Terminal.Text = Terminal.Text.Remove(cursorPosition - 1, 1);
                         Terminal.SelectionStart = cursorPosition - 1;
                     }
-                    
+
                 }
             }
             else if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down || e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
@@ -1215,7 +1237,7 @@ namespace chat
                             {
                                 hisselect++;
                             }
-                            Terminal.Text = Terminal.Text.Substring(0, priviousnumb+1) + cmdhiStrings[hisselect] + " ";
+                            Terminal.Text = Terminal.Text.Substring(0, priviousnumb + 1) + cmdhiStrings[hisselect] + " ";
                             SendKeys.Send("{TAB}");
                             SendKeys.Send("{Right}");
                             SendKeys.Send("{BACKSPACE}");
@@ -1228,7 +1250,7 @@ namespace chat
                         {
                             hisselect++;
                         }
-                        Terminal.Text = Terminal.Text.Substring(0, priviousnumb+1) + cmdhiStrings[hisselect] + " ";
+                        Terminal.Text = Terminal.Text.Substring(0, priviousnumb + 1) + cmdhiStrings[hisselect] + " ";
                         SendKeys.Send("{TAB}");
                         SendKeys.Send("{Right}");
                         SendKeys.Send("{BACKSPACE}");
@@ -1265,28 +1287,38 @@ namespace chat
             }
         }
 
-        private void ATwho(string type, string name)
+        
+
+        private void Atto_Click(object sender, EventArgs e)
         {
-            if (type == "add")
-            {
-                atwho.DataGridView.Rows.Add(name);
-                //MessageBox.Show(atwho.Text);
-            }
-            else if (type == "clear")
-            {
-                atwho.Clear();
-            }
+
         }
 
-        private void atwho_Click(object ender, EventArgs e)
+        private void Atto_KeyDown(object sender, KeyEventArgs e)
         {
-            Send("none", "none", "none", "list");
+            e.Handled = true;
+        }
+
+        private void Atto_PaddingChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        
+
+        private void Atto_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void Atto_MouseClick(object sender, MouseEventArgs e)
+        {
+            Send("none", "none", "list");
         }
 
         private void Terminal_MouseDown(object sender, MouseEventArgs e)
         {
             Terminal.SelectionStart = Terminal.TextLength - 1;
-
             Terminal.SelectionLength = 0;
         }
 
@@ -1294,7 +1326,6 @@ namespace chat
         {
 
         }
-
 
         private void Terminal_MouseUp(object sender, MouseEventArgs e)
         {
