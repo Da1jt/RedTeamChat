@@ -78,7 +78,7 @@ namespace chat
             }
         }
 
-        bool _contrigger = false, _connectb = false, _intranetSockStatus = false;
+        bool _contrigger = false, _connectb = false;
         private Socket _clientSocket;
         public void Send(string msge, string time, string type)
         {
@@ -157,7 +157,6 @@ namespace chat
                 case "log": return 3;
                 case "file": return 4;
                 case "emsg": return 5;
-                case "cmdre": return 6;
                 default: return 0;
             }
         }
@@ -336,6 +335,7 @@ namespace chat
                         IPAddress[] ipAddresses = Dns.GetHostAddresses(server.Text);
                         if (ipAddresses.Length != 1)
                         {
+                            StringBuilder buildstr = new StringBuilder();
                             string[] dips = new string[ipAddresses.Length];
                             for (int i = 0; i < ipAddresses.Length; i++)
                             {
@@ -344,8 +344,9 @@ namespace chat
                             string finout = "[The domain name contains multiple IP addresses. Please specify a single IP or use an IP-only domain name]\nIncluded IPs:\n";
                             for (int i = 0; i < Math.Min(6, dips.Length); i++)
                             {
-                                finout += dips[i] + "\n";
+                                buildstr.Append(dips[i] + "\n");
                             }
+                            finout += buildstr.ToString();
                             if (dips.Length > 6)
                             {
                                 finout += "...";
@@ -369,9 +370,10 @@ namespace chat
                     con.Enabled = false;
                     controlmenu1.SelectedTab = chatroom;
                     discon.Show();
+                    Send("@@@Joined the server@@@", DateTime.Now.ToString(), "common");
                     Send("none", "none", "list");
                     Atto.Enabled = true;
-                    Send("@@@Joined the server@@@", DateTime.Now.ToString(), "common");
+                    
                     Lableadd("Self-Connected", "sysinfo", "none");
                 }
                 catch (Exception ex)
@@ -478,10 +480,6 @@ namespace chat
                     ana_common(decoded);
                 }
             }
-            else if (typedet == 6)
-            {
-
-            }
             else
             {
                 this.Invoke(new Action(() =>
@@ -504,12 +502,10 @@ namespace chat
 
                 if (fourthString.EndsWith(nameset.Text) || secondString == nameset.Text || fourthString == "@All")
                 {
-                    //MessageBox.Show(fourthString + ":" + fourthString.Length);
                     Tips();
                 }
                 else
                 {
-                    //MessageBox.Show("1");
                     return;
                 }
 
@@ -593,6 +589,7 @@ namespace chat
                 })));
             }
         }
+
         private void discon_Click(object sender, EventArgs e)
         {
             Disconnectgo();
@@ -645,9 +642,10 @@ namespace chat
             else if (rd.StartsWith("FileInfo")) return 2;
             else return 0;
         }
+
         private void File_System(string rawdata)
         {
-            int rete = Filedef(rawdata);
+            /*int rete = Filedef(rawdata);
             if (rete == 1)
             {
                 string raw2 = string.Empty;
@@ -672,8 +670,8 @@ namespace chat
             }
             else if (rete == 2)
             {
-
-            }
+                
+            }*/
         }
         private void refreshfilel_Click(object sender, EventArgs e)
         {
@@ -736,8 +734,6 @@ namespace chat
                 Serverfilegrid.Rows.Remove(selectedRow);
             }
         }
-
-        private bool _emojiselected = false;
         private void Emoji_Click(object sender, EventArgs e)
         {
             if (_contrigger)
@@ -787,7 +783,6 @@ namespace chat
         }
 
         private readonly object lockObject = new object();
-
         private void Lableadd(string inp, string type, string color)
         {
             lock (lockObject)
@@ -832,13 +827,10 @@ namespace chat
                             PictureBox pictureBox = new PictureBox();
                             pictureBox.Size = new Size(200, 200);
                             pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-                            /*File.Create("C:\\Users\\"+Environment.UserName+"\\RedTeamTemp\\temp");
-                            File.Delete("C:\\Users\\" + Environment.UserName + "\\RedTeamTemp\\temp");*/
                             Image image = Image.FromFile("C:\\Users\\" + Environment.UserName + "\\RedTeamTemp\\" + inp);
                             pictureBox.Image = image;
                             uiFlowLayoutPanel1.Controls.Add(pictureBox);
                             uiFlowLayoutPanel1.ScrollControlIntoView(pictureBox);
-
                         }
                         catch (Exception e)
                         {
@@ -1009,11 +1001,15 @@ namespace chat
                     {
                         previousLine = previousLine.Substring(0, previousLine.Length - 1);
                     }
-                    cmdhiStrings[hisnmb] = previousLine; hisnmb++; hisselect = hisnmb;
+
+                    cmdhiStrings[hisnmb] = previousLine;
+                    hisnmb++;
+                    hisselect = hisnmb;
                     Terminal.Text += "\n";
                     if (previousLine == "help")
                     {
-                        Terminal.Text += "rkey [your rcekey]    Set the RCEKey\nrmkey              Remove the RCEKey\ncls                 Clear The Screen\nti [ip]   Set Target Terminal Ip(Default Localhost)\ntp [post]   Set Target Terminal Port(Default 8084)\ncc           Remove Connect Setting\ncfg         Show Connect Setting\n";
+                        Terminal.Text +=
+                            "rkey [your rcekey]    Set the RCEKey\nrmkey              Remove the RCEKey\ncls                 Clear The Screen\nti [ip]   Set Target Terminal Ip(Default Localhost)\ntp [post]   Set Target Terminal Port(Default 8084)\ncc           Remove Connect Setting\ncfg         Show Connect Setting\n";
                     }
                     else if (previousLine.StartsWith("rkey "))
                     {
@@ -1083,75 +1079,67 @@ namespace chat
                     {
                         if (previousLine != String.Empty && previousLine != "cmd")
                         {
-                            if (/*!string.IsNullOrEmpty(RCEKey)&&*/_terminalipset != "")
-                            {
-                                /*if (RCEKey!=String.Empty)
-                                {*/
-                                string url = $"http://{_terminalipset}:{_terminalportset}/?command={previousLine}";
-                                Uri requestUri = new Uri(url);
-
-                                HttpClientHandler handler = new HttpClientHandler();
-                                using (HttpClient client = new HttpClient(handler))
+                            
+                                if (RCEKey != String.Empty)
                                 {
-                                    try
+                                    string url = $"http://{_terminalipset}:{_terminalportset}/?command={previousLine}";
+                                    Uri requestUri = new Uri(url);
+                                    HttpClientHandler handler = new HttpClientHandler();
+                                    using (HttpClient client = new HttpClient(handler))
                                     {
-                                        HttpResponseMessage response = await client.GetAsync(requestUri);
-                                        response.EnsureSuccessStatusCode();
-                                        string responseBody = await response.Content.ReadAsStringAsync();
-                                        if (responseBody == string.Empty)
+                                        try
                                         {
-                                            responseBody = $"'{previousLine}' 不是内部或外部命令，也不是可运行的程序";
-                                        }
-                                        Terminal.Text += "\n->" + responseBody;
-                                        Terminal.Text += $"\n[{DateTime.Now}] cmd> ";
-                                        Terminal.SelectionLength = 0;
-                                        wfcmd = true;
-                                        this.Invoke(new Action((() =>
-                                        {
-                                            Terminal.Focus();
-                                            SendKeys.Send("{TAB}");
-                                            SendKeys.Send("{Right}");
-                                            SendKeys.Send("{BACKSPACE}");
-                                        })));
-                                    }
-                                    catch (HttpRequestException ex)
-                                    {
-                                        consolee.Text += ($"请求失败: {ex.Message}\n");
-                                        Terminal.Text += "\n->Access Deniel\n";
-                                        Terminal.Text += $"[{DateTime.Now}] cmd> ";
-                                        Terminal.SelectionStart = Terminal.Text.Length;
-                                        Terminal.SelectionLength = 0;
-                                        wfcmd = true;
-                                        this.Invoke(new Action((() =>
-                                        {
-                                            IntPtr foregroundWindowHandle = GetForegroundWindow();
-                                            GetWindowThreadProcessId(foregroundWindowHandle, out int foregroundProcessId);
-                                            int currentProcessId = Process.GetCurrentProcess().Id;
-                                            if (foregroundProcessId == currentProcessId)
+                                            HttpResponseMessage response = await client.GetAsync(requestUri);
+                                            response.EnsureSuccessStatusCode();
+                                            string responseBody = await response.Content.ReadAsStringAsync();
+                                            if (responseBody == string.Empty)
+                                            {
+                                                responseBody = $"'{previousLine}' 不是内部或外部命令，也不是可运行的程序";
+                                            }
+
+                                            Terminal.Text += $"\n->{responseBody}\n[{DateTime.Now}] cmd> ";
+                                            Terminal.SelectionLength = 0;
+                                            wfcmd = true;
+                                            this.Invoke(new Action((() =>
                                             {
                                                 Terminal.Focus();
                                                 SendKeys.Send("{TAB}");
                                                 SendKeys.Send("{Right}");
                                                 SendKeys.Send("{BACKSPACE}");
-                                            }
-                                            else
+                                            })));
+                                        }
+                                        catch (HttpRequestException ex)
+                                        {
+                                            consolee.Text += ($"请求失败: {ex.Message}\n");
+                                            Terminal.Text += $"\n->Access Deniel\n[{DateTime.Now}] cmd> ";
+                                            Terminal.SelectionStart = Terminal.Text.Length;
+                                            Terminal.SelectionLength = 0;
+                                            wfcmd = true;
+                                            this.Invoke(new Action((() =>
                                             {
-                                                controlmenu1.Focus();
-                                            }
-                                        })));
+                                                IntPtr foregroundWindowHandle = GetForegroundWindow();
+                                                GetWindowThreadProcessId(foregroundWindowHandle,
+                                                    out int foregroundProcessId);
+                                                int currentProcessId = Process.GetCurrentProcess().Id;
+                                                if (foregroundProcessId == currentProcessId)
+                                                {
+                                                    Terminal.Focus();
+                                                    SendKeys.Send("{TAB}");
+                                                    SendKeys.Send("{Right}");
+                                                    SendKeys.Send("{BACKSPACE}");
+                                                }
+                                                else
+                                                {
+                                                    controlmenu1.Focus();
+                                                }
+                                            })));
+                                        }
                                     }
-                                }
-                                /*Send(previousLine, RCEKey, currentTime.ToString(), "cmd");
                                 }
                                 else
                                 {
                                     Terminal.Text += "RCEKey Was Empty\n";
-                                }*/
-                            }
-                            else
-                            {
-                                Terminal.Text += "IP Was Empty\n";
-                            }
+                                }
                         }
                     }
                     if (!wfcmd)
@@ -1167,6 +1155,7 @@ namespace chat
 
                         })));
                     }
+
                     wfcmd = false;
                     Terminal.Text = Terminal.Text.Substring(0, Terminal.Text.Length - 1);
                     priviousnumb = Terminal.Text.Length - 1;
@@ -1189,11 +1178,12 @@ namespace chat
                 if (GetCurrentLineText().Length > 27)
                 {
                     string ltxet = String.Empty;
+                    StringBuilder buildstr = new StringBuilder();
                     for (int i = 1; i <= 6; i++)
                     {
-                        ltxet += Terminal.Text[cursorPosition - i];
+                        buildstr.Append(Terminal.Text[cursorPosition - i]);
                     }
-
+                    ltxet = buildstr.ToString();
                     if (ltxet != ">dmc ]")
                     {
                         Terminal.Text = Terminal.Text.Remove(cursorPosition - 1, 1);
@@ -1211,14 +1201,14 @@ namespace chat
                     if (e.KeyCode == Keys.Left)
                     {
                         int cursorPosition = Terminal.SelectionStart;
-
-                        string leftText = Terminal.Text.Substring(0, cursorPosition);
                         string ltxet = String.Empty;
+                        StringBuilder buildstr = new StringBuilder();
                         for (int i = 1; i <= 4; i++)
                         {
-                            ltxet += Terminal.Text[cursorPosition - i];
+                            buildstr.Append(Terminal.Text[cursorPosition - i]);
                         }
 
+                        ltxet = buildstr.ToString();
                         if (ltxet != ">dmc")
                         {
                             Terminal.SelectionStart -= 1;
@@ -1287,24 +1277,11 @@ namespace chat
             }
         }
 
-        
-
-        private void Atto_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void Atto_KeyDown(object sender, KeyEventArgs e)
         {
             e.Handled = true;
         }
 
-        private void Atto_PaddingChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        
 
         private void Atto_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -1322,14 +1299,9 @@ namespace chat
             Terminal.SelectionLength = 0;
         }
 
-        private void uiFlowLayoutPanel1_Click(object sender, EventArgs e)
+
+        public void Terminal_MouseUp(object sender, MouseEventArgs e)
         {
-
-        }
-
-        private void Terminal_MouseUp(object sender, MouseEventArgs e)
-        {
-
             Terminal.SelectionStart = Terminal.TextLength - 1;
             Terminal.SelectionLength = 0;
         }

