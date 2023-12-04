@@ -34,7 +34,7 @@ namespace chat
                 Application.EnableVisualStyles();
                 refreshfilel.Enabled = false;
                 server.Text = "127.0.0.1";
-                Terminal.Text += $"->Ini Success\n->Use 'help' to get help\n[{DateTime.Now}] cmd> ";
+                Terminal.Text += $"->Ini Success\n->Use 'help' to get help\n[{DateTime.Now}]  cmd> ";
                 this.Icon = Properties.Resources.chat;
                 priviousnumb = Terminal.Text.Length - 1;
                 AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
@@ -201,26 +201,11 @@ namespace chat
         {
             for (int i = 0; i < inp.Length - 1; i++)
             {
-                if (inp[i] == '#' && inp[i + 1] == '#')
-                {
-                    return 1;
-                }
-                else if (inp[i] == '/' && inp[i + 1] == '/')
-                {
-                    return 0;
-                }
-                else if (inp[i] == '%' && inp[i + 1] == '%')
-                {
-                    return 3;
-                }
-                else if (inp[i] == '@' && inp[i + 1] == '@' && inp[i + 2] == '@')
-                {
-                    return 4;
-                }
-                else if (inp[i] == '-' && inp[i + 1] == '>')
-                {
-                    return 5;
-                }
+                if (inp[i] == '#' && inp[i + 1] == '#') return 1;
+                else if (inp[i] == '/' && inp[i + 1] == '/') return 0;
+                else if (inp[i] == '%' && inp[i + 1] == '%') return 3;
+                else if (inp[i] == '@' && inp[i + 1] == '@' && inp[i + 2] == '@') return 4;
+                else if (inp[i] == '-' && inp[i + 1] == '>') return 5;
             }
             return 2;
         }
@@ -519,7 +504,7 @@ namespace chat
                     }
                     else
                     {
-                        col = "blue";
+                        col = "origin";
                     }
                     if (firstString.StartsWith("[") && firstString.EndsWith("]"))
                     {
@@ -528,7 +513,7 @@ namespace chat
                             lock (lockObject)
                             {
                                 Lableadd(" User:  " + secondString + "(me)->" + fourthString + " time:  " + thirdString,
-                                    "text", "none");
+                                    "text", col);
                             }
                         }
                         else
@@ -536,7 +521,7 @@ namespace chat
                             lock (lockObject)
                             {
                                 Lableadd(" User:  " + secondString + "->" + fourthString + " time:  " + thirdString,
-                                    "text", "none");
+                                    "text", col);
                             }
                         }
                         lock (lockObject)
@@ -569,7 +554,7 @@ namespace chat
                             {
                                 Lableadd(
                                     " User:  " + secondString + "(me)->" + fourthString + " time:  " + thirdString +
-                                    "\n", "text", "none");
+                                    "\n", "text", col);
                                 Lableadd(firstString, "msgbox", col);
                             }
                         }
@@ -579,7 +564,7 @@ namespace chat
                             {
                                 Lableadd(
                                     " User:  " + secondString + "->" + fourthString + " time:  " + thirdString + "\n",
-                                    "text", "none");
+                                    "text", col);
                                 Lableadd(firstString, "msgbox", col);
                             }
 
@@ -794,7 +779,15 @@ namespace chat
                         Label label = new Label();
                         label.Text = inp;
                         label.AutoSize = true;
-                        label.ForeColor = Color.Teal;
+                        if (color == "oran")
+                        {
+                            label.ForeColor = Color.Orange;
+                        }
+                        else if (color == "origin")
+                        {
+                            label.ForeColor = Color.Teal;
+                        }
+                        
                         uiFlowLayoutPanel1.Controls.Add(label);
                         uiFlowLayoutPanel1.ScrollControlIntoView(label);
                     })));
@@ -806,7 +799,7 @@ namespace chat
                     {
                         richTextBox.FillColor = Color.Orange;
                     }
-                    else if (color == "blue")
+                    else if (color == "origin")
                     {
                         richTextBox.FillColor = Color.SkyBlue;
                     }
@@ -868,17 +861,14 @@ namespace chat
         }
         public void Emojianalysis(string emojiname)
         {
-            if (emojiname == "[Doge]")
+            switch (emojiname)
             {
-                Lableadd("Doge", "emoji", "none");
-            }
-            else if (emojiname == "[E]")
-            {
-                Lableadd("E", "emoji", "none");
-            }
-            else
-            {
-                Lableadd(emojiname, "text", "none");
+                case "[Doge]": Lableadd("Doge", "emoji", "none");
+                    break;
+                case "[E]": Lableadd("E", "emoji", "none");
+                    break;
+                default: Lableadd(emojiname, "text", "none");
+                    break;
             }
         }
         private void RedTeamChat_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
@@ -988,6 +978,7 @@ namespace chat
             {
                 e.Handled = true;
                 Terminal.ReadOnly = true;
+                
                 try
                 {
                     int currentLineIndex = Terminal.GetLineFromCharIndex(Terminal.SelectionStart);
@@ -1002,6 +993,7 @@ namespace chat
                         previousLine = previousLine.Substring(0, previousLine.Length - 1);
                     }
 
+                    
                     cmdhiStrings[hisnmb] = previousLine;
                     hisnmb++;
                     hisselect = hisnmb;
@@ -1013,7 +1005,6 @@ namespace chat
                     }
                     else if (previousLine.StartsWith("rkey "))
                     {
-
                         if (RCEKey == String.Empty)
                         {
                             RCEKey = previousLine.Substring(5);
@@ -1027,9 +1018,7 @@ namespace chat
                     else if (previousLine == "rmkey")
                     {
                         if (RCEKey == String.Empty)
-                        {
                             Terminal.Text += "->RCEKey Was Empty\n";
-                        }
                         else
                         {
                             RCEKey = String.Empty;
@@ -1037,9 +1026,7 @@ namespace chat
                         }
                     }
                     else if (previousLine == "cls")
-                    {
                         Terminal.Text = "->Ini Success\n";
-                    }
                     else if (previousLine.StartsWith("ti "))
                     {
                         if (IPAddress.TryParse(previousLine.Substring(3), out IPAddress ip))
@@ -1048,9 +1035,8 @@ namespace chat
                             Terminal.Text += $"->Terminal Terget Set:{_terminalipset}:{_terminalportset}\n";
                         }
                         else
-                        {
                             Terminal.Text += $"->Invalid IP\nTerminal Terget:{_terminalipset}:{_terminalportset}\n";
-                        }
+                        
                     }
                     else if (previousLine.StartsWith("tp "))
                     {
@@ -1060,9 +1046,8 @@ namespace chat
                             Terminal.Text += $"->Terminal Terget Set:{_terminalipset}:{_terminalportset}\n";
                         }
                         else
-                        {
                             Terminal.Text += $"->Invalid Port\nTerminal Terget:{_terminalipset}:{_terminalportset}\n";
-                        }
+                        
 
                     }
                     else if (previousLine == "cc")
@@ -1072,14 +1057,11 @@ namespace chat
                         Terminal.Text += "->Terminal Setting Clear\n";
                     }
                     else if (previousLine == "cfg")
-                    {
                         Terminal.Text += $"->Terminal Target {_terminalipset}:{_terminalportset}\n";
-                    }
                     else
                     {
                         if (previousLine != String.Empty && previousLine != "cmd")
                         {
-                            
                                 if (RCEKey != String.Empty)
                                 {
                                     string url = $"http://{_terminalipset}:{_terminalportset}/?command={previousLine}";
@@ -1093,11 +1075,9 @@ namespace chat
                                             response.EnsureSuccessStatusCode();
                                             string responseBody = await response.Content.ReadAsStringAsync();
                                             if (responseBody == string.Empty)
-                                            {
                                                 responseBody = $"'{previousLine}' 不是内部或外部命令，也不是可运行的程序";
-                                            }
 
-                                            Terminal.Text += $"\n->{responseBody}\n[{DateTime.Now}] cmd> ";
+                                            Terminal.Text += $"\n->{responseBody}\n[{DateTime.Now}]  cmd> ";
                                             Terminal.SelectionLength = 0;
                                             wfcmd = true;
                                             this.Invoke(new Action((() =>
@@ -1111,7 +1091,7 @@ namespace chat
                                         catch (HttpRequestException ex)
                                         {
                                             consolee.Text += ($"请求失败: {ex.Message}\n");
-                                            Terminal.Text += $"\n->Access Deniel\n[{DateTime.Now}] cmd> ";
+                                            Terminal.Text += $"\n->Access Deniel\n[{DateTime.Now}]  cmd> ";
                                             Terminal.SelectionStart = Terminal.Text.Length;
                                             Terminal.SelectionLength = 0;
                                             wfcmd = true;
@@ -1137,14 +1117,12 @@ namespace chat
                                     }
                                 }
                                 else
-                                {
                                     Terminal.Text += "RCEKey Was Empty\n";
-                                }
                         }
                     }
                     if (!wfcmd)
                     {
-                        Terminal.Text += $"[{DateTime.Now}] cmd> ";
+                        Terminal.Text += $"[{DateTime.Now}]  cmd> ";
                         Terminal.SelectionStart = Terminal.Text.Length;
                         Terminal.SelectionLength = 0;
                         this.Invoke(new Action((() =>
@@ -1155,16 +1133,19 @@ namespace chat
 
                         })));
                     }
-
+                    
                     wfcmd = false;
                     Terminal.Text = Terminal.Text.Substring(0, Terminal.Text.Length - 1);
                     priviousnumb = Terminal.Text.Length - 1;
+                    Terminal.SelectionStart-=2;
+                    SendKeys.Send("{BACKSPACE}");
                 }
                 catch (Exception exception)
                 {
-                    Terminal.Text += $"\n[{DateTime.Now}] cmd> ";
+                    Terminal.Text += $"\n[{DateTime.Now}]  cmd> ";
                     consolee.Text += exception.Message + "\n";
                     SendKeys.Send("{TAB}");
+                    SendKeys.Send("{BACKSPACE}");
                 }
 
                 Terminal.ReadOnly = false;
@@ -1172,7 +1153,6 @@ namespace chat
             else if (e.KeyCode == Keys.Back)
             {
                 e.Handled = true;
-
                 int cursorPosition = Terminal.SelectionStart;
 
                 if (GetCurrentLineText().Length > 27)
@@ -1180,9 +1160,7 @@ namespace chat
                     string ltxet = String.Empty;
                     StringBuilder buildstr = new StringBuilder();
                     for (int i = 1; i <= 6; i++)
-                    {
                         buildstr.Append(Terminal.Text[cursorPosition - i]);
-                    }
                     ltxet = buildstr.ToString();
                     if (ltxet != ">dmc ]")
                     {
@@ -1204,15 +1182,11 @@ namespace chat
                         string ltxet = String.Empty;
                         StringBuilder buildstr = new StringBuilder();
                         for (int i = 1; i <= 4; i++)
-                        {
                             buildstr.Append(Terminal.Text[cursorPosition - i]);
-                        }
 
                         ltxet = buildstr.ToString();
                         if (ltxet != ">dmc")
-                        {
                             Terminal.SelectionStart -= 1;
-                        }
                     }
                     else if (e.KeyCode == Keys.Right && Terminal.SelectionStart != Terminal.Text.Length - 1)
                     {
@@ -1224,9 +1198,7 @@ namespace chat
                         {
                             --hisselect;
                             if (hisselect < 0)
-                            {
                                 hisselect++;
-                            }
                             Terminal.Text = Terminal.Text.Substring(0, priviousnumb + 1) + cmdhiStrings[hisselect] + " ";
                             SendKeys.Send("{TAB}");
                             SendKeys.Send("{Right}");
@@ -1237,13 +1209,17 @@ namespace chat
                     else if (e.KeyCode == Keys.Down)
                     {
                         if (hisselect < hisnmb)
-                        {
                             hisselect++;
-                        }
-                        Terminal.Text = Terminal.Text.Substring(0, priviousnumb + 1) + cmdhiStrings[hisselect] + " ";
-                        SendKeys.Send("{TAB}");
-                        SendKeys.Send("{Right}");
-                        SendKeys.Send("{BACKSPACE}");
+                        
+                        int cursorPosition = Terminal.SelectionStart;
+                        int currentLineIndex = Terminal.GetLineFromCharIndex(cursorPosition);
+                        MessageBox.Show(Terminal.Lines[currentLineIndex], Terminal.Lines[currentLineIndex].Length.ToString());
+                        Terminal.Lines[currentLineIndex] = Terminal.Lines[currentLineIndex].Substring(27, Terminal.Lines[currentLineIndex].Length);
+
+                        //Terminal.Text = Terminal.Text.Substring(0, priviousnumb + 1) + cmdhiStrings[hisselect] + " ";
+                        //SendKeys.Send("{TAB}");
+                        //SendKeys.Send("{Right}");
+                        //SendKeys.Send("{BACKSPACE}");
 
                     }
                 }
@@ -1282,7 +1258,6 @@ namespace chat
             e.Handled = true;
         }
 
-
         private void Atto_KeyPress(object sender, KeyPressEventArgs e)
         {
             e.Handled = true;
@@ -1300,7 +1275,7 @@ namespace chat
         }
 
 
-        public void Terminal_MouseUp(object sender, MouseEventArgs e)
+        public virtual void Terminal_MouseUp(object sender, MouseEventArgs e)
         {
             Terminal.SelectionStart = Terminal.TextLength - 1;
             Terminal.SelectionLength = 0;
